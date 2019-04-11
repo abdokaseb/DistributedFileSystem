@@ -55,21 +55,28 @@ def uploadFile(portsAvailable):
 def downloadFile(userID,filename,dbcursour,portsAvailable):
     SQL = "SELECT IP FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
-    machIDsRows = dbcursour.fetchall()
+    machIPsRows = dbcursour.fetchall()
     listConnections = []
 
-    for machIDRow in machIDsRows:
-        machID = str(machIDRow[0])
-        for port in portsAvailable[machID]:
-            a = portsAvailable[machID]
+    for machIPRow in machIPsRows:
+        machIP = str(machIPRow[0])
+        for port in portsAvailable[machIP]:
+            a = portsAvailable[machIP]
             a.remove(port)
-            portsAvailable[machID] = a
-            listConnections.append('{}:{}'.format(machID,port))
+            portsAvailable[machIP] = a
+            listConnections.append('{}:{}'.format(machIP,port))
             if len(listConnections) == 6:
                 return json.dumps(listConnections)
             # continue or not depend mainly on is it okay to have more than one port in the same machine ?
-            continue
+            # continue
     print("Sorry We Are Very Busy")
+
+    a = [connection.split() for connection in listConnections]
+    for connection in listConnections:
+        IP, port = connection.split(':')
+        a = portsAvailable[IP] 
+        a.append(port)
+        portsAvailable[IP] = a
     return json.dumps("ERROR 404")
 
     
