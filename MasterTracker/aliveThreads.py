@@ -12,6 +12,19 @@ def getMachineIP():
 machineIP = getMachineIP()
 
 def checkLive(portsAvailable,timeStam,topics):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        database="lookUpData"
+    )
+
+    dbcursour = mydb.cursor()
+    dbcursour.execute("UPDATE machines SET isAlive = 0")
+    mydb.commit()
+    dieSQL = "UPDATE machines SET isAlive = 0 WHERE id = %s "
+    lifeSQL = "UPDATE machines SET isAlive = 1, IP=%s WHERE id = %s "
+
     staticTimeStamp = {}
     Alive = [0]*(len(topics)+1)
     for topic in topics:
@@ -23,7 +36,11 @@ def checkLive(portsAvailable,timeStam,topics):
             value,recvIP = timeStam[key]
             if (s[0] >= value):
                 s[1] += 1
-                if s[1] > 3 and recvIP != '0':
+                if s[1] > 3 and Alive[int(key)] != 0:
+                    Alive[int(key)] = 0
+                    dbcursour.execute(dieSQL,(key,))
+                    mydb.commit()
+
                     print("machine with ID={} and IP={} dead".format(key,recvIP))
                     portsAvailable[recvIP] = []
                     
@@ -32,6 +49,9 @@ def checkLive(portsAvailable,timeStam,topics):
                 if Alive[int(key)] == 0:
                     print("machine with ID={} and IP={} is alive".format(key,recvIP))
                     Alive[int(key)] = 1
+                    dbcursour.execute(lifeSQL,(recvIP,key))
+                    mydb.commit()
+
                     portsAvailable[recvIP] = portsDatanodeClient
 
                 s[0] = value
