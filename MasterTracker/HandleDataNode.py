@@ -42,8 +42,8 @@ def success(portsAvailable,rootIP, port):
         a = portsAvailable[rows[0][0]] 
         if recvPort not in a:
             a.append(recvPort)
+            print("Port {} back from Machine ID={}, IP={} ".format(recvPort,ID,rows[0][0]))
         portsAvailable[rows[0][0]] = a
-        print(portsAvailable[rows[0][0]])
 
 
 if __name__ == "__main__": 
