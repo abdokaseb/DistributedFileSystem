@@ -4,7 +4,17 @@ import json
 
 userID = 1
 USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
-MasterTrakerIP = '192.168.1.9'
+MasterTrakerIP = '192.168.137.189'
+
+portsdatabaseClients = ["7001","7002","7003","7004","7005","7006"]
+context = zmq.Context()
+socket = context.socket(zmq.REQ)
+[socket.connect("tcp://%s:%s" % (MasterTrakerIP,port)) for port in portsdatabaseClients]
+
+socket.send_string("INSERT INTO Users (UserID, UserName, Email, Pass) VALUES (25,'touny','abdo', 'abdo');")
+message = socket.recv_string()
+print(message)
+sys.exit(1)
 
 
 portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
