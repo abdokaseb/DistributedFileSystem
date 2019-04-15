@@ -6,10 +6,9 @@ import mysql.connector
 import json
 import time
 
+
+
 import math
-
-
-
 
 ACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1}
 
@@ -29,27 +28,26 @@ def communicate(port):
         socket.send_string("client operation info and user Id and have been reveived")
 
         if ACTIONS[message[0]] == ACTIONS['UPLOAD']:
-            result = uploadFile(socket,message[1],message[2])
+            ipPort = socket.recv_string()  # receive client upload port
+            socket.send_string('pull push socket ip have been received')
+            fileName = message[1] +'_'+ message[2]     
+            result = uploadFile(ipPort, fileName)
+    
             print (result)
         elif ACTIONS[message[0]] == ACTIONS['DOWNLOAD']:
             result = downloadFile(socket, message[1], message[2], message[3],message[4])
             print(result)
 
 
-def uploadFile(socket,userId,fileName):
+def uploadFile(ipPort,fileName):
     
-
-    ipPort=socket.recv_string() # receive client upload port
-
     context = zmq.Context()
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
     pullSocket.connect("tcp://"+ipPort)
 
-    socket.send_string('pull push socket ip have been received')
-
-
-    fileobj = open(DIR+str(userId)+'_'+fileName, 'wb+')
+    fileobj = open(DIR+fileName, 'wb+')
+    
     counter =0
     while True :
         chunk=pullSocket.recv()

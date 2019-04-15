@@ -53,7 +53,7 @@ def uploadFile(portsAvailable):
     #        return '{}:{}'.format(machIP,port)
     #print("Sorry We Are Very Busy")
     #return "ERROR 404"
-    return '{}:{}'.format('192.168.1.4','6001')             
+    return '{}:{}'.format('192.168.137.147', '6001')
     ##################3################
 
 def downloadFile(userID,filename,dbcursour,portsAvailable):
@@ -83,7 +83,7 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
         portsAvailable[IP] = a
     return json.dumps("ERROR 404") """
 
-    return json.dumps(['192.168.1.4:6001', '192.168.1.4:6002', '192.168.1.4:6003', '192.168.1.4:6004', '192.168.1.4:6005', '192.168.1.4:6006'])
+    return json.dumps(['192.168.137.147:6001', '192.168.137.147:6002', '192.168.137.147:6003', '192.168.137.147:6004', '192.168.137.147:6005', '192.168.137.147:6006'])
     #return json.dumps(['192.168.1.4:6001'])
 
     

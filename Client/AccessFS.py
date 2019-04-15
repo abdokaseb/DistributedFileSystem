@@ -2,17 +2,20 @@ import zmq
 import sys
 import json
 import multiprocessing as mp
+import os
 
 userID = 1
 
 
 USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
-MasterTrakerIP = '192.168.1.4'
+MasterTrakerIP = '192.168.137.147'
 
 portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
 
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
+
+CHUNK_SIZE = 500
 
 DIR = "C:\\Users\\ramym\\Desktop\\client\\"  ######## default directory of client machine to download or upload files
 
@@ -22,7 +25,7 @@ for port in portsMasterClient: socket.connect ("tcp://%s:%s" % (MasterTrakerIP,p
 # GET user action, and file name for up and down
 userAction = 'DOWNLOAD'
 #file name shouldn't have spaces
-fileName = 'Lec3.mp4'
+fileName = 'Lec4.mp4'
 ########functions for client operations
 
 clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"]  # down load ports of data node
@@ -30,32 +33,13 @@ clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"]  # down lo
 clientUploadPort= 7005
 
 
-def Upload(DataNodePort):
-    ######################################## 
-    ####### using datanode returend from the master to establish comminucation to upload the file
-    print(DataNodePort)          
-    socket = context.socket(zmq.REQ)     ######## Socket to connect with DataNode
-
-    socket.connect(DataNodePort)
-
-    socket.send_string("{} {} {}".format(userAction, userID, fileName))
-    print("type of operation and user and file name have been send")
-    message =socket.recv_string()
-    print(message)  # response from the datanode that the needed type of operation have been send
-
-    socket.send_string("192.168.1.4:"+str(clientUploadPort))    ######## the new socket for uploading the data to data node to make it connect to it
-
-    message = socket.recv_string()
-    # response from the datanode that the needed type of operation have been send
-    print(message)
-
-
+def Upload(port, fileName):
     pushContext = zmq.Context()
     pushSocket = pushContext.socket(zmq.PUSH)
     pushSocket.hwm = 10
-    pushSocket.bind("tcp://"+"192.168.1.4:"+str(clientUploadPort)) ########## change this ip (client Device) with something general 
+    # change this ip (client Device) with something general
+    pushSocket.bind("tcp://"+"192.168.137.147:"+str(port))
     ############################
-    CHUNK_SIZE=500
     with open(DIR+fileName, "rb") as f:
         chunk = f.read(CHUNK_SIZE)
         while chunk:                                                     # push - pull to send the video
@@ -92,7 +76,7 @@ def Download(DataNodePorts):
 
     downloadProcesses.join()
 
-    with  open(DIR+str(userID)+"_"+fileName, 'wb+') as fileobj :
+    with  open(DIR+fileName, 'wb+') as fileobj :
         for i in range(len(DataNodePorts)):
             with open(DIR+str(userID)+"_" +str(i)+"_"+fileName, 'rb+') as partFile:
                 chunk=partFile.read(1024)
@@ -100,6 +84,8 @@ def Download(DataNodePorts):
                     fileobj.write(chunk)
                     chunk = partFile.read(1024)
 
+    for i in range(len(DataNodePorts)):
+        os.remove(DIR+str(userID)+"_" +str(i)+"_"+fileName)
     return 
 
         
@@ -123,14 +109,15 @@ def downloadPart(port,userAction,userId,fileName,partNum,chunkSize):
     message = opSocket.recv_string()
     print(message)
 
-    opSocket.send_string("192.168.1.4:"+str(clientDownloadPorts[partNum]))
+    opSocket.send_string("192.168.137.147:"+str(clientDownloadPorts[partNum]))
     print ("send ip push pull to datanode port")
     message = opSocket.recv_string()
     print(message)
 
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
-    pullSocket.connect("tcp://"+"192.168.1.4:"+str(clientDownloadPorts[partNum]))
+    pullSocket.connect("tcp://"+"192.168.137.147:" +
+                       str(clientDownloadPorts[partNum]))
 
     fileobj = open(DIR+str(userId)+"_"+str(partNum)+"_"+fileName, 'wb+')
     while True:
@@ -164,11 +151,27 @@ if __name__ == "__main__":
     elif userAction == 'UPLOAD':
         socket.send_string("{} {} {}".format(userID,USERACTIONS[userAction],''))
         message = socket.recv_string()  #this message is the IP:port for the mechine (e.g 192.168.1.9:5554)
-        #communicate with the data node to upload
-        #####
-        #port=6001
-        #Upload("tcp://localhost:%s" % port)
-        Upload("tcp://"+message)
+        
+        DataNodePort = "tcp://"+message
+
+        print(DataNodePort)
+        socket = context.socket(zmq.REQ)  # Socket to connect with DataNode
+
+        socket.connect(DataNodePort)
+
+        socket.send_string("{} {} {}".format(userAction, userID, fileName))
+        print("type of operation and user and file name have been send")
+        message = socket.recv_string()
+        # response from the datanode that the needed type of operation have been send
+        print(message)
+
+        # the new socket for uploading the data to data node to make it connect to it
+        socket.send_string("192.168.137.147:"+str(clientUploadPort))
+
+        message = socket.recv_string()
+        # response from the datanode that the needed type of operation have been send
+
+        Upload(clientUploadPort , fileName)
 
 
         ######
