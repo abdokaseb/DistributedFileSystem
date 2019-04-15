@@ -41,19 +41,23 @@ def listFiles(userID,dbcursour):
     rows = dbcursour.fetchall()
     result = [row[0] for row in rows]
     return json.dumps(result)
+#####################################################################################################
 
+######### For Test the DataNode ###################### remove it
 def uploadFile(portsAvailable):
-    for machIP in portsAvailable.keys():
-        for port in portsAvailable[machIP]:
-            a = portsAvailable[machIP]
-            a.remove(port)
-            portsAvailable[machIP] = a
-            return '{}:{}'.format(machIP,port)
-    print("Sorry We Are Very Busy")
-    return "ERROR 404"
+    #for machIP in portsAvailable.keys():
+    #    for port in portsAvailable[machIP]:
+    #        a = portsAvailable[machIP]
+    #        a.remove(port)
+    #        portsAvailable[machIP] = a
+    #        return '{}:{}'.format(machIP,port)
+    #print("Sorry We Are Very Busy")
+    #return "ERROR 404"
+    return '{}:{}'.format('192.168.137.147', '6001')
+    ##################3################
 
 def downloadFile(userID,filename,dbcursour,portsAvailable):
-    SQL = "SELECT IP FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
+    """SQL = "SELECT IP FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
     machIPsRows = dbcursour.fetchall()
     listConnections = []
@@ -77,7 +81,10 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
         a = portsAvailable[IP] 
         a.append(port)
         portsAvailable[IP] = a
-    return json.dumps("ERROR 404")
+    return json.dumps("ERROR 404") """
+
+    return json.dumps(['192.168.137.147:6001', '192.168.137.147:6002', '192.168.137.147:6003', '192.168.137.147:6004', '192.168.137.147:6005', '192.168.137.147:6006'])
+    #return json.dumps(['192.168.1.4:6001'])
 
     
 
