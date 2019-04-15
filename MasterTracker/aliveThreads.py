@@ -52,7 +52,7 @@ def checkLive(portsAvailable,timeStam,topics):
                     dbcursour.execute(lifeSQL,(recvIP,key))
                     mydb.commit()
 
-                    portsAvailable[recvIP] = portsDatanodeClient
+                    portsAvailable[recvIP] = portsDatanodeClient  
 
                 s[0] = value
                 s[1] = 0

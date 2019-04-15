@@ -21,7 +21,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE TABLE IF NOT EXISTS machines (ID Int, isAlive Int, IP VARCHAR(13), primary key(ID))")
+mycursor.execute("CREATE TABLE IF NOT EXISTS machines (ID Int, isAlive Int, IP INT(4) UNSIGNED, primary key(ID))")
 mycursor.execute("CREATE TABLE IF NOT EXISTS files (UserID Int, machID Int, fileName VARCHAR(255))")
 
 # sql = ''

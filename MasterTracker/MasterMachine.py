@@ -39,6 +39,7 @@ if __name__ == "__main__":
     successPort = "7001"
     portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
     portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
+    #portsDataNodeDataNode = ["9001","9002","9003","9004","9009","9006"]
     machinesIDs = readMachinesIDs()
 
     portsAvailable = mp.Manager().dict()
