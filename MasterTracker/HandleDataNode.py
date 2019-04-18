@@ -45,6 +45,25 @@ def success(portsAvailable,rootIP, port):
             print("Port {} back from Machine ID={}, IP={} ".format(recvPort,ID,rows[0][0]))
         portsAvailable[rows[0][0]] = a
 
+def uploadSucess (rootIP, port):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        database="lookUpData",
+        autocommit = True
+    )
+
+    dbcursour = mydb.cursor()
+
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind ("tcp://%s:%s" % (rootIP, port))
+    SQL = "INSERT INTO files (UserID, mcahID, fileName) VALUES (%s,%s,%s)"
+    while True:
+        UserID, mcahID, fileName = socket.recv_string().split()
+        dbcursour.execute(SQL,(UserID, mcahID, fileName))
+        socket.send_string("1")
 
 if __name__ == "__main__": 
     successPort = "7001"

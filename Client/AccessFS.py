@@ -3,8 +3,38 @@ import sys
 import json
 import multiprocessing as mp
 import os
+import threading as th
+import random
 
-userID = 1
+userID = -1
+
+_FINISHTHREAD = 0
+
+portsHandleClentsToSlaves = ["8201","8202","8203","8204","8205","8206"]
+
+def requestDatabaseSlave(IP,ports,userName,password):
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    [socket.connect("tcp://%s:%s" % (IP,port)) for port in ports]
+    socket.send_string("need")
+    msg = socket.recv_string() 
+    socket.close()
+
+    retriveSql = "SELECT UserID FROM Users WHERE UserName='{}' and Pass ='{}' ;".format(userName,password)
+
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://%s" % (msg))
+    socket.send_string(retriveSql)
+    userID = socket.recv_string() 
+    socket.close()
+    
+    return userID
+
+
+MasterTrakerIP = '127.0.0.1'
+
+requestDatabaseSlave(MasterTrakerIP,portsHandleClentsToSlaves,"tye","try")
 
 USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
 MasterTrakerIP = '192.168.137.189'
