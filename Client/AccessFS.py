@@ -3,8 +3,25 @@ import sys
 import json
 import multiprocessing as mp
 import os
+import sys
+
+sys.path.insert(0,"../MasterTracker/")
+from replicaUtilities import getMyIP
 
 userID = 1
+
+USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
+MasterTrakerIP = '192.168.137.189'
+
+portsdatabaseClients = ["7001","7002","7003","7004","7005","7006"]
+context = zmq.Context()
+socket = context.socket(zmq.REQ)
+[socket.connect("tcp://%s:%s" % (MasterTrakerIP,port)) for port in portsdatabaseClients]
+
+socket.send_string("INSERT INTO Users (UserID, UserName, Email, Pass) VALUES (25,'touny','abdo', 'abdo');")
+message = socket.recv_string()
+print(message)
+sys.exit(1)
 
 
 USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
@@ -17,8 +34,8 @@ socket = context.socket(zmq.REQ)
 
 CHUNK_SIZE = 500
 
-DIR = "C:\\Users\\ramym\\Desktop\\client\\"  ######## default directory of client machine to download or upload files
-
+#DIR = "C:\\Users\\ramym\\Desktop\\client\\"  ######## default directory of client machine to download or upload files
+DIR = ''
 
 for port in portsMasterClient: socket.connect ("tcp://%s:%s" % (MasterTrakerIP,port))
 
@@ -30,26 +47,26 @@ fileName = 'Lec4.mp4'
 
 clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"]  # down load ports of data node
 
-clientUploadPort= 7005
+clientUploadIpPort= (getMyIP(),"7005")
 
 
-def Upload(port, fileName):
+def Upload(ipPort, fileName):
     pushContext = zmq.Context()
     pushSocket = pushContext.socket(zmq.PUSH)
     pushSocket.hwm = 10
     # change this ip (client Device) with something general
-    pushSocket.bind("tcp://"+"192.168.137.147:"+str(port))
+    pushSocket.bind("tcp://%s:%s"%(ipPort))
     ############################
     with open(DIR+fileName, "rb") as f:
         chunk = f.read(CHUNK_SIZE)
         while chunk:                                                     # push - pull to send the video
             pushSocket.send(chunk)
-            print ('count')
+            #print ('count')
             chunk = f.read(CHUNK_SIZE)
     
     f.close()
-
     pushSocket.send(b'')                       ## send EOF to end push pull comminucation
+    pushSocket.close()
     ####################################
 
 
@@ -171,7 +188,7 @@ if __name__ == "__main__":
         message = socket.recv_string()
         # response from the datanode that the needed type of operation have been send
 
-        Upload(clientUploadPort , fileName)
+        Upload(clientUploadPort, fileName)
 
 
         ######

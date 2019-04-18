@@ -7,12 +7,12 @@ import json
 import time
 
 
-
 import math
 
 ACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1}
 
-DIR = "C:\\Users\\ramym\\Desktop\\nn\\"
+#DIR = "../"
+DIR = ''
 
 def communicate(port):
     
@@ -28,7 +28,7 @@ def communicate(port):
         socket.send_string("client operation info and user Id and have been reveived")
 
         if ACTIONS[message[0]] == ACTIONS['UPLOAD']:
-            ipPort = socket.recv_string()  # receive client upload port
+            ipPort = tuple(socket.recv_string().split(':'))  # receive client upload port
             socket.send_string('pull push socket ip have been received')
             fileName = message[1] +'_'+ message[2]     
             result = uploadFile(ipPort, fileName)
@@ -44,21 +44,22 @@ def uploadFile(ipPort,fileName):
     context = zmq.Context()
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
-    pullSocket.connect("tcp://"+ipPort)
+    pullSocket.connect("tcp://%s:%s"%ipPort)
 
     fileobj = open(DIR+fileName, 'wb+')
     
     counter =0
     while True :
         chunk=pullSocket.recv()
-        print(counter)
+        #print(counter)
         counter=counter+1
         if chunk is b'':
             print('condition satisfied')
             break
         fileobj.write(chunk)
 
-    fileobj.close()     
+    fileobj.close()    
+    pullSocket.close() 
 
     ######################3 
     ####### here we will norify the tracker

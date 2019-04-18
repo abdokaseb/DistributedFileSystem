@@ -2,9 +2,9 @@ import sys,zmq,time,mysql.connector
 import multiprocessing as mp ,copy,json,random ,logging
 
 # INET_NTOA IPuintToStr 
-logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+#logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
-minReplicasCount = 5
+minReplicasCount = 2
 
 db = mysql.connector.connect(
             host="localhost",
@@ -21,8 +21,11 @@ def fakeReplication(fakeUserID,fakeMachId,fileName):
     db.commit()
 
 def releasePorts(srcMachine,dstMachine,availReplicaPorts):
-    availReplicaPorts[srcMachine[0]].append(srcMachine[2])
-    availReplicaPorts[dstMachine[0]].append(dstMachine[2])
+    print(availReplicaPorts[srcMachine[0]])
+    a,b = availReplicaPorts[srcMachine[0]],availReplicaPorts[dstMachine[0]] 
+    print(a)
+    a.append(srcMachine[2]) ; b.append(dstMachine[2])
+    availReplicaPorts[srcMachine[0]], availReplicaPorts[dstMachine[0]]= a,b
 
 
 def confirmReplication(fakeUserID,fakeMachId,realUserID,realMachId,fileName):
