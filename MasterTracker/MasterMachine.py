@@ -35,6 +35,7 @@ def readMachinesIDs():
 
 if __name__ == "__main__":
     machineIP = getMachineIP()
+    print(machineIP)
     heartPort = "5556"
     successPort = "7001"
     portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
