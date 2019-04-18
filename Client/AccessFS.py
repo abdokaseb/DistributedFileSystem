@@ -3,49 +3,115 @@ import sys
 import json
 import multiprocessing as mp
 import os
-import sys
+
 
 sys.path.insert(0,"../MasterTracker/")
 from replicaUtilities import getMyIP
-
 userID = 1
-
 USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
-MasterTrakerIP = '192.168.137.189'
-
-portsdatabaseClients = ["7001","7002","7003","7004","7005","7006"]
-context = zmq.Context()
-socket = context.socket(zmq.REQ)
-[socket.connect("tcp://%s:%s" % (MasterTrakerIP,port)) for port in portsdatabaseClients]
-
-socket.send_string("INSERT INTO Users (UserID, UserName, Email, Pass) VALUES (25,'touny','abdo', 'abdo');")
-message = socket.recv_string()
-print(message)
-sys.exit(1)
-
-
-USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
-MasterTrakerIP = '192.168.137.147'
-
+MasterMachineIP = '192.168.137.147'
 portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
+clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"] 
+portsdatabaseClients=["7001","7002","7003","7004","7005","7006"]
+DIR = "E:\\Alb 3ammar"
+   
+def userInput():
+    UserID=-2;
+    ErrorMessage=""
+    ContinueCheck=""
+    Function=""
+    print("Welcome, Please press 1 to sign in or 2 to sign up with a new account")
+    while(UserID ==-2 and ContinueCheck=="2"):    
+        DatbaseInput=input()
+        if(DatbaseInput=="1"):
+            print("Please Enter Your E-mail Address")
+            EmailAddress= input()
+            print("Please Enter Your Password")
+            Password= input()
+            #Kasep Function Call to check the User Data Using Slaves and ID Update
+            if(UserID== -2):
+                print(ErrorMessage)
+                print("Press 1 to End process or 2 to enter again")
+                ContinueCheck=input()
+        elif (DatbaseInput=="2"):
+            print("Please Enter an E-mail Address")
+            EmailAddress= input()
+            print("Please Enter your Name")
+            Password= input()
+            print("Please Enter your Password")
+            Password= input()
+            #Kaseb Function Call to insert user in the database and ID Update
+            if(UserID==-2):
+                print(ErrorMessage)
+                print("Press 1 to End process or 2 to enter again")
+                ContinueCheck=input()
+
+    print("Please, Press No. of function you want:")
+    print("Press 1 to Show your files")
+    print("Press 2 to Upload file")
+    print("Press 3 to Download file")
+    Function = input()
+    check="1"
+    functionCheck=""
+    FileName=""
+    while(check=="1"):    
+        if(Function =="1"):
+            #Fuction Call for LS
+            if(functionCheck=="-1"):
+                print(ErrorMessage)
+            print("Please Press 1 to Use another function or 2 to End")
+            check=input()
+        elif(Function =="2"):
+            #Fuction Call for Download
+            print("Please, Enter the fileName to be downloaded")
+            FileName=input()
+            if(functionCheck=="-1"):
+                print(ErrorMessage)
+            print("Please Press 1 to Use another function or 2 to End")
+            check=input()
+            
+        elif (Function== "3"):
+            #Function Call For Upload
+            print("Please, Enter the file to be Uploaded")
+            FileName=input()
+            if(functionCheck=="-1"):
+                print(ErrorMessage)
+            print("Please Press 1 to Use another function or 2 to End")
+            check=input()
+        else: 
+            print("Please Press 1 to Use another function or 2 to End")
+            check=input()
+
+    
+
+
+
+
+
+
+
+  
+
+
+
 
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
 
 CHUNK_SIZE = 500
 
-#DIR = "C:\\Users\\ramym\\Desktop\\client\\"  ######## default directory of client machine to download or upload files
-DIR = ''
+  ######## default directory of client machine to download or upload files
 
-for port in portsMasterClient: socket.connect ("tcp://%s:%s" % (MasterTrakerIP,port))
 
-# GET user action, and file name for up and down
-userAction = 'DOWNLOAD'
-#file name shouldn't have spaces
-fileName = 'Lec4.mp4'
-########functions for client operations
+for port in portsMasterClient: socket.connect ("tcp://%s:%s" % (portsMasterClient,port))
 
-clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"]  # down load ports of data node
+# # GET user action, and file name for up and down
+# userAction = 'DOWNLOAD'
+# #file name shouldn't have spaces
+# fileName = 'Lec4.mp4'
+# ########functions for client operations
+
+#  # down load ports of data node
 
 clientUploadIpPort= (getMyIP(),"7005")
 
