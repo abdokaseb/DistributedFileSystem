@@ -8,7 +8,7 @@ import time
 import os
 import logging
 
-logging.basicConfig(filename='logs/DataNodeHandleRequess.log',
+logging.basicConfig(filename='logs/os.log',
                     filemode='w', format='%(name)s - %(levelname)s - %(message)s', level="INFO")
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
