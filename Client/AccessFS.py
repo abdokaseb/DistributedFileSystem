@@ -5,22 +5,25 @@ import multiprocessing as mp
 import os
 import threading as th
 import random
-
+sys.path.append("../")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MASTER_DATABASE_MACHINE_IP, clientDownloadPorts, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts
-
+import logging 
+logging.basicConfig(filename='logs/Client.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
+#logging.info("asdasdasdasd")
 sys.path.insert(0,"../MasterTracker/")
 
 from Util import getMyIP
 
  
 def userInput(socket):
-    UserID=-2;
+    UserID="-2";
     ErrorMessage=""
-    ContinueCheck=""
+    ContinueCheck="2"
     Function=""
-    print("Welcome, Please press 1 to sign in or 2 to sign up with a new account")
-    while(UserID ==-2 and ContinueCheck=="2"):    
+    #print("Welcome, Please press 1 to sign in or 2 to sign up with a new account")
+    while(UserID =="-2" and ContinueCheck=="2"):
+        print("Please press 1 to sign in or 2 to sign up with a new account")    
         DatbaseInput=input()
         if(DatbaseInput=="1"):
             print("Please Enter Your User Name")
@@ -29,10 +32,12 @@ def userInput(socket):
             Password= input()
             #Kasep Function Call to check the User Data Using Slaves and ID Update
             UserID=requestDatabaseSlave(MASTER_DATABASE_MACHINE_IP,portsHandleClentsToSlaves,UserName,Password)
+            logging.info(UserID)
             if(UserID== -2):
-                #print(ErrorMessage)
                 print("Press 1 to End process or 2 to enter again")
                 ContinueCheck=input()
+                logging.error(UserID)
+                logging.error(ContinueCheck)
         elif (DatbaseInput=="2"):
             print("Please Enter an E-mail Address")
             EmailAddress= input()
@@ -41,23 +46,29 @@ def userInput(socket):
             print("Please Enter your Password")
             Password= input()
             #Kaseb Function Call to insert user in the database and ID Update
-            UserID=SignUp(MASTER_FILESYSTEM_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) #Needs Check
+            UserID=SignUp(MASTER_FILESYSTEM_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) 
+            logging.info(UserID)
             if(UserID=="-2"):
                 print("Can't Sign Up")
                 print("Press 1 to End process or 2 to enter again")
                 ContinueCheck=input()
+                logging.info(UserID)
+                logging.info(ContinueCheck)
+    
+    logging.info(UserID)
+    logging.info(ContinueCheck)
     if(ContinueCheck=="1"):
         sys.out()
-    print("Please, Press No. of function you want:")
-    print("Press 1 to Show your files")
-    print("Press 2 to Upload file")
-    print("Press 3 to Download file")
-    Function = input()
     check="1"
     functionCheck=""
     FileName=""
     DIR=""
-    while(check=="1"):    
+    while(check=="1"):
+        print("Please, Press No. of function you want:")
+        print("Press 1 to Show your files")
+        print("Press 2 to Upload file")
+        print("Press 3 to Download file")
+        Function = input()    
         if(Function =="1"):
             #Fuction Call for LS
             LSAction("LS",socket,UserID)
@@ -65,29 +76,40 @@ def userInput(socket):
                 print(ErrorMessage)
             print("Please Press 1 to Use another function or 2 to End")
             check=input()
+            logging.info(functionCheck)
+            logging.info(check)
+    
         elif(Function =="2"):
             #Fuction Call for Download
             print("Please, Enter the fileName to be directory of the file to be downloaded in ")
             DIR = input()
             print("Please, Enter the fileName to be downloaded")
             FileName = input()
-            DownloadAction("DOWNLOAD",socket,DIR,FileName,UserID)
+            functionCheck=DownloadAction("DOWNLOAD",socket,DIR,FileName,UserID)
+            logging.info(functionCheck)
             if(functionCheck=="-1"):
                 print(ErrorMessage)
             print("Please Press 1 to Use another function or 2 to End")
             check=input()
+            logging.info(functionCheck)
+            logging.info(check)
             
         elif (Function== "3"):
             print("Please, Enter the file to be Uploaded")
             FileName=input()
-            UploadAction("UPLOAD", socket, DIR, FileName, UserID)
+            print("Please, Enter the DIR to be Uploaded")
+            DIR=input()
+            functionCheck=UploadAction("UPLOAD", socket, DIR, FileName, UserID)
             if(functionCheck=="-1"):
                 print(ErrorMessage)
             print("Please Press 1 to Use another function or 2 to End")
             check=input()
+            logging.info(functionCheck)
+            logging.info(check)
         else: 
             print("Please Press 1 to Use another function or 2 to End")
             check=input()
+            logging.info(check)
 
 
 #######################################################################
@@ -95,19 +117,28 @@ def userInput(socket):
 #####################################################################
 def requestDatabaseSlave(IP,ports,userName,password):
     context = zmq.Context()
+   
+    logging.info("Connection started")
     socket = context.socket(zmq.REQ)
     [socket.connect("tcp://%s:%s" % (IP,port)) for port in ports]
+    logging.info("Connection finished")
+
     socket.send_string("need")
     msg = socket.recv_string() 
+    logging.info(msg)
+
     socket.close()
 
     retriveSql = "SELECT UserID FROM Users WHERE UserName='{}' and Pass ='{}' ;".format(userName,password)
-
+    logging.info(retriveSql)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://%s" % (msg))
+    logging.info(msg)
     socket.send_string(retriveSql)
-    userID = socket.recv_string() 
+    logging.info(retriveSql)
+    userID = socket.recv_string()
+    logging.info(userID) 
     socket.close()
     
     return userID
@@ -129,8 +160,6 @@ def Upload(ipPort,DIR,fileName):
     pushSocket.send(b'')                       ## send EOF to end push pull comminucation
     pushSocket.close()
     ####################################
-
-
 def Download(DataNodePorts, DIR, fileName, userID, userAction):
     ########################################
     ####### using datanode returend from the master to establish comminucation to upload the file
@@ -184,54 +213,52 @@ def DownloadAction(userAction,socket,DIR,fileName,userID):
         # communicate with the data node to download
     print(message)
     message = json.loads(message)
+    if message == "ERROR 404":
+        print("Sorry We Are Very Busy")
+        return -1 
 
     Download(message, DIR, fileName, userID, userAction)
         
-    print(message)
-    if message == "ERROR 404":
-        print("Sorry We Are Very Busy")
-        pass
-
 def LSAction(userAction,socket,userID):
     socket.send_string("{} {} {}".format(userID,USERACTIONS[userAction],''))
     message = socket.recv_json()
     files = json.loads(message)
     print("the list of files are:")
     for i,file in enumerate(files,start=1): print("\t{}- {}".format(i,file))
-
-
 def UploadAction(userAction, socket, DIR, fileName, userID):
     socket.send_string("{} {} {}".format(userID,USERACTIONS[userAction],''))
     message = socket.recv_string()  #this message is the IP:port for the mechine (e.g 192.168.1.9:5554)
-        
+    logging.info(message)    
+    print(message)
+    if message == "ERROR 404":
+            print("Sorry We Are Very Busy")
+            return -1
+
     DataNodePort = "tcp://"+message
-
-    print(DataNodePort)
+    logging.info(DataNodePort)
+            
+    #print(DataNodePort)
     socket = context.socket(zmq.REQ)  # Socket to connect with DataNode
-
     socket.connect(DataNodePort)
 
     socket.send_string("{} {} {}".format(userAction, userID, fileName))
-    print("type of operation and user and file name have been send")
+    logging.info("type of operation and user and file name have been send")
     message = socket.recv_string()
-        # response from the datanode that the needed type of operation have been send
-    print(message)
+    logging.info("after socket receive type of operation and filenae and user to datanode")
 
-        # the new socket for uploading the data to data node to make it connect to it
+    logging.info("messsageeeeeeeeeeee"+message)
+        #response from the datanode that the needed type of operation have been send
+    
+        #the new socket for uploading the data to data node to make it connect to it
     socket.send_string(clientUploadIpPort[0]+":"+clientUploadIpPort[1])
 
     message = socket.recv_string()
-        # response from the datanode that the needed type of operation have been send
+        #response from the datanode that the needed type of operation have been send
+    logging.info(message)
 
     Upload(clientUploadIpPort, DIR, fileName)
+    return 1
 
-
-     ######
-
-        #print(message)
-        #if message == "ERROR 404":
-        #    print("Sorry We Are Very Busy")
-        #pass
 def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfPorts):
     
     
@@ -242,13 +269,13 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
         userAction, userId, fileName, partNum, chunkSize, numberOfPorts))
     print("type of operation and user and file and chunkazes name have been send")
     message = opSocket.recv_string()
-    print(message)
+    logging.info(message)
+   
 
     opSocket.send_string(getMyIP()+":"+str(clientDownloadPorts[partNum]))
-    print ("send ip push pull to datanode port")
+    logging.info("send ip push pull to datanode port")
     message = opSocket.recv_string()
-    print(message)
-
+    logging.info(message)
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
     pullSocket.connect("tcp://"+getMyIP()+":"+str(clientDownloadPorts[partNum]))
@@ -259,19 +286,31 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
         #print('data received in '+str(partNum))
         #counter = counter+1
         if chunk is b'':
-            print('condition satisfied')
+            logging.info('condition satisfied')
             break
         fileobj.write(chunk)
 
     fileobj.close()
 def SignUp(socket,Port,userName,Email,Password):
+   
+    logging.info(userName)
+    logging.info(Email)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     [socket.connect("tcp://%s:%s" % (MASTER_FILESYSTEM_MACHINE_IP,port)) for port in portsdatabaseClients]
+    logging.info(userName)
+    logging.info(Email)
 
     InsertSQL="{} {} {}".format(userName,Email,Password)
+    logging.info(userName)
+    logging.info(Email)
+   
     socket.send_string(InsertSQL)
+    logging.info(userName)
+    logging.info(Email)
+   
     userID = socket.recv_string() 
+    logging.info(userID)
     socket.close()
     return userID 
     
