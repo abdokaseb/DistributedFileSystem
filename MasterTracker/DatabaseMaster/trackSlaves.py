@@ -4,9 +4,8 @@ import time
 import threading 
 import mysql.connector
 import copy
-portsSlavesClient = ["5756","5757","5758"]
-# portsSlavesClient = ["10001","10002","10003","10004","10005","10006"]
-N_DATABASE_SLAVES = 5
+
+from constants import portsSlavesClient, N_DATABASE_SLAVES
 
 def getMachineIP():
     import socket

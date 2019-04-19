@@ -7,7 +7,6 @@ import copy
 
 from Constants import portsDatanodeClient
 
-#portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
 
 def getMachineIP():
     import socket

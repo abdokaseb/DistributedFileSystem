@@ -5,7 +5,6 @@ import multiprocessing as mp
 import mysql.connector
 import json
 from HandleSlaves import SendSlave
-
 from Constants import portsDatanodeClient
 
 

@@ -6,13 +6,21 @@ from Util import getMyIP
 CHUNK_SIZE = 500
 USERACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1, 'LS': 2}
 
-MASTER_DATABASE_MACHINE_IP = '192.168.137.147'
 MASTER_FILESYSTEM_MACHINE_IP = '192.168.137.147'
 
-
+############ DATABASE
+MASTER_DATABASE_MACHINE_IP = '192.168.137.147'
+portsSlavesClient = ["5756", "5757", "5758"]
+portsdatabaseSlaves = ["8001", "8002", "8003", "8004", "8005", "8006"]
+DatabaseportToListenSlaves = "8101"
+N_DATABASE_SLAVES=5
 ############
 masterPortUploadSucess = "7001"
 masterHeartPort = "5556"
+
+############### replica constanta
+MIN_REPLICA_COUNT = 2
+
 
 
 

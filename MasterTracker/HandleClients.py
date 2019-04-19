@@ -5,10 +5,10 @@ import multiprocessing as mp
 import mysql.connector
 import json
 
-from Constants import portsDatanodeClient
+from Constants import portsDatanodeClient, USERACTIONS
 
 
-USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
+#USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
 
 def communicate(portsAvailable,port):
     mydb = mysql.connector.connect(

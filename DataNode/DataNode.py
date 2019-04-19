@@ -11,7 +11,7 @@ from alive import sendHeartBeat
 
 from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP
 
-
+machineID=1
 
 
 class NoDaemonProcess(multiprocessing.Process):
@@ -45,15 +45,19 @@ def Test():
 
 if __name__ == "__main__":
 
+    machineID = int(sys.argv[1])
+
     DIR = sys.argv[2]
 
     #### for client and master
     mainProcesses = NoDaemonPool(len(portsDatanodeClient))
-    mainProcesses.map_async(communicate, portsDatanodeClient)
+    mainProcesses.starmap_async(communicate, [(port, DIR) for port in portsDatanodeClient])
     
 
+    ############
     testProcess = mp.Process(target=Test)
     testProcess.start()
+    ############
 
 
     #### replica processes
@@ -61,7 +65,6 @@ if __name__ == "__main__":
     replicaProcesses.map_async(hp, portsDatanodeDatanode)
 
     ################ alive process 
-    machineID = int(sys.argv[1])
 
     aliveProcesses = mp.Process(target=sendHeartBeat, args=(
         machineID, MASTER_FILESYSTEM_MACHINE_IP, masterHeartPort))

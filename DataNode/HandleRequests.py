@@ -8,10 +8,7 @@ import time
 
 
 import math
-
 from Constants import USERACTIONS as ACTIONS
-
-#DIR = ''
 
 def communicate(port,DIR):
     

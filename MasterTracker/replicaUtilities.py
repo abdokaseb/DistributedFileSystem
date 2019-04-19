@@ -4,7 +4,7 @@ import multiprocessing as mp ,copy,json,random ,logging
 # INET_NTOA IPuintToStr 
 #logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
-minReplicasCount = 2
+from constants import MIN_REPLICA_COUNT
 
 db = mysql.connector.connect(
             host="localhost",
@@ -50,7 +50,7 @@ def getMachinesCount():
     
 
 def getFilesToReplicate():
-    minRepCnt = min(getMachinesCount(), minReplicasCount)
+    minRepCnt = min(getMachinesCount(), MIN_REPLICA_COUNT)
     dbcursour = db.cursor()
     countFilesReplicasQuery = "select fileName,count(*) as 'repCnt' from files group by(fileName) having repCnt < {}".format(minRepCnt)
     dbcursour.execute(countFilesReplicasQuery)
