@@ -6,6 +6,7 @@ import mysql.connector
 import json
 import os
 import logging
+import random
 logging.basicConfig(level="INFO",filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -55,29 +56,30 @@ def listFiles(userID,dbcursour):
 
 ######### For Test the DataNode ###################### remove it
 def uploadFile(portsAvailable):
-    for machIP in portsAvailable.keys():
-       for port in portsAvailable[machIP]:
-           a = portsAvailable[machIP]
-           a.remove(port)
-           portsAvailable[machIP] = a
-           return '{}:{}'.format(machIP,port)
-    print("Sorry We Are Very Busy")
-    return "ERROR 404"
-    # return '{}:{}'.format('172.28.178.37', '6001')
-    ##################3################
+    machIPs = portsAvailable.keys()
+    index = random.randint(0,len(machIPs)-1)
+    machIP = machIPs[index]
+    
+    ports = portsAvailable[machIP]
+    index = random.randint(0,len(ports)-1)
+    port = ports[index]
+
+    return '{}:{}'.format(machIP,port)
 
 def downloadFile(userID,filename,dbcursour,portsAvailable):
     SQL = "SELECT INET_NTOA(IP) FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
     machIPsRows = dbcursour.fetchall()
+    
     listConnections = []
-
     for machIPRow in machIPsRows:
         machIP = str(machIPRow[0])
-        for port in portsAvailable[machIP]:
-            a = portsAvailable[machIP]
-            a.remove(port)
-            portsAvailable[machIP] = a
+        ports = portsAvailable[machIP]
+        random.shuffle(ports)
+        for port in ports:
+            # a = portsAvailable[machIP]
+            # a.remove(port)
+            # portsAvailable[machIP] = a
             listConnections.append('{}:{}'.format(machIP,port))
             if len(listConnections) == 6:
                 return json.dumps(listConnections)
@@ -85,12 +87,12 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
             # continue
     print("Sorry We Are Very Busy")
 
-    a = [connection.split() for connection in listConnections]
-    for connection in listConnections:
-        IP, port = connection.split(':')
-        a = portsAvailable[IP] 
-        a.append(port)
-        portsAvailable[IP] = a
+    # a = [connection.split() for connection in listConnections]
+    # for connection in listConnections:
+    #     IP, port = connection.split(':')
+    #     a = portsAvailable[IP] 
+    #     a.append(port)
+    #     portsAvailable[IP] = a
     return json.dumps("ERROR 404")
 
     #return json.dumps(['172.28.178.37:6001', '172.28.178.37:6002', '172.28.178.37:6003', '172.28.178.37:6004', '172.28.178.37:6005', '172.28.178.37:6006', '172.28.178.37:6007'])
