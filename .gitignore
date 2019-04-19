@@ -10,4 +10,5 @@ Client/*.pyc
 DataNode/*.pyc
 logs/*.pyc
 MasterTracker/*.pyc
-
+DataNode/DatabaseSlave/__pycache__/*
+DataNode/__pycache__/*

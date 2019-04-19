@@ -7,6 +7,7 @@ import mysql.connector
 from aliveThreads import recevHeartBeat
 from HandleDataNode import uploadSucess as DNSuccess
 from HandleClients import communicate as CComm
+from replicaProcces import replicate as replicateFunc
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -30,7 +31,8 @@ def readMachinesIDs():
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()
@@ -44,7 +46,8 @@ if __name__ == "__main__":
     print(machineIP)
     machinesIDs = readMachinesIDs()
 
-    portsAvailable = mp.Manager().dict()
+    manager = mp.Manager()
+    portsAvailable = manager.dict()
     testProcess = mp.Process(target=test,args=(portsAvailable,))
     testProcess.start()
 
@@ -55,10 +58,14 @@ if __name__ == "__main__":
         machineIP, masterPortUploadSucess))
     successProcess.start()
 
+    replicaProcess = mp.Process(target=replicateFunc)
+    replicaProcess.start()
+
     clientsProcesses = mp.Pool(len(masterClientPorts))
-    clientsProcesses.starmap(CComm,[(portsAvailable,port) for port in masterClientPorts])
+    clientsProcesses.starmap_async(CComm,[(portsAvailable,port) for port in masterClientPorts])
 
 
     aliveProcess.join()
     successProcess.join()
     clientsProcesses.join()
+    replicaProcess.join()

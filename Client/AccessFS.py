@@ -5,6 +5,15 @@ import multiprocessing as mp
 import os
 import threading as th
 import random
+
+_FINISHTHREAD = 0
+
+MasterMachineIP = '192.168.137.147'
+portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
+clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"]
+portsHandleClentsToSlaves = ["8201","8202","8203","8204","8205","8206"] 
+portsdatabaseClients=["7001","7002","7003","7004","7005","7006"]
+DIR = "E:\\Alb 3ammar"
 sys.path.insert(0,"../MasterTracker/")
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -43,9 +52,9 @@ def userInput(socket):
             print("Please Enter your Password")
             Password= input()
             #Kaseb Function Call to insert user in the database and ID Update
-            UserID=SignUp(MASTER_DATABASE_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) #Needs Check
-            if(UserID==-2):
-                print(ErrorMessage)
+            UserID=SignUp(MasterMachineIP,portsMasterClient,userName,EmailAddress,Password) #Needs Check
+            if(UserID=="-2"):
+                print("Can't Sign Up")
                 print("Press 1 to End process or 2 to enter again")
                 ContinueCheck=input()
     if(ContinueCheck=="1"):
@@ -266,8 +275,18 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
         fileobj.write(chunk)
 
     fileobj.close()
-def SignUp(IP,Port,userName,Email,Password):
-    pass
+def SignUp(socket,Port,userName,Email,Password):
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    [socket.connect("tcp://%s:%s" % (MasterMachineIP,port)) for port in portsdatabaseClients]
+
+    InsertSQL="{} {} {}".format(userName,Email,Password)
+    socket.send_string(InsertSQL)
+    userID = socket.recv_string() 
+    socket.close()
+    return userID 
+    
+    
 
 
 if __name__ == "__main__":

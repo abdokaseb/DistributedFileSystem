@@ -34,12 +34,13 @@ if __name__ == '__main__':
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()
 
-    dbcursour.execute("select IP from machines")
+    dbcursour.execute("select INET_NTOA(IP) from machines")
     IPsRow = dbcursour.fetchall()
     IPsM =  [str(IP[0]) for IP in IPsRow]
 

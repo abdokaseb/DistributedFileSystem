@@ -61,7 +61,7 @@ def uploadFile(portsAvailable):
     ##################3################
 
 def downloadFile(userID,filename,dbcursour,portsAvailable):
-    """SQL = "SELECT IP FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
+    """SQL = "SELECT INET_NTOA(IP) FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
     machIPsRows = dbcursour.fetchall()
     listConnections = []
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     dbcursour = mydb.cursor()
 
-    dbcursour.execute("select IP from machines")
+    dbcursour.execute("select INET_NTOA(IP) from machines")
     IPsRow = dbcursour.fetchall()
     IPsM =  [str(IP[0]) for IP in IPsRow]
 

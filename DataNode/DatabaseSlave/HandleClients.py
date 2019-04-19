@@ -11,7 +11,7 @@ def communicate(port,IP):
         host="localhost",
         user="root",
         passwd="",
-        database="testSlave",
+        database="lookUpData",
         autocommit=True
     )
     dbcursour = mydb.cursor()    
