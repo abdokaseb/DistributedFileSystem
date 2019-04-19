@@ -57,6 +57,3 @@ def getFilesToReplicate():
     return dbcursour.fetchall() 
 
 
-def getMyIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())

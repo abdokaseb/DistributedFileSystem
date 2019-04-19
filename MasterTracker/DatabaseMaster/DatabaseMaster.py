@@ -8,6 +8,7 @@ from HandleClients import communicate
 from distributor import distributorF
 from trackSlaves import recevHeartBeat as HBSlaves
 from HandleClientsToSlave import communicate as CScomm
+from Constants import portsHandleClentsToSlaves, portsdatabaseClients
 
 def getMachineIP():
     import socket
@@ -20,10 +21,10 @@ def test(portsAvailable):
         time.sleep(1)
 
 if __name__ == "__main__":
-    portsdatabaseClients = ["7001","7002","7003","7004","7005","7006"]
+    #portsdatabaseClients = ["7001","7002","7003","7004","7005","7006"]
     portsdatabaseSlaves = ["8001","8002","8003","8004","8005","8006"]
     portToListenSlaves = "8101"
-    portsHandleClentsToSlaves = ["8201","8202","8203","8204","8205","8206"]
+    #portsHandleClentsToSlaves = ["8201","8202","8203","8204","8205","8206"]
 
     machineIP = getMachineIP()
     manager = mp.Manager()

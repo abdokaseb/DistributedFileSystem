@@ -9,12 +9,11 @@ import time
 
 import math
 
-ACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1}
+from Constants import USERACTIONS as ACTIONS
 
-DIR = "C:\\Users\\ramym\\Desktop\\nn\\"
 #DIR = ''
 
-def communicate(port):
+def communicate(port,DIR):
     
     print ("inside process "+port)
 
@@ -31,7 +30,7 @@ def communicate(port):
             ipPort = tuple(socket.recv_string().split(':'))  # receive client upload port
             socket.send_string('pull push socket ip have been received')
             fileName = message[1] +'_'+ message[2]  
-            uploadProcess = mp.Process(target=uploadFile, args=(ipPort, fileName))
+            uploadProcess = mp.Process(target=uploadFile, args=(ipPort,DIR, fileName))
             uploadProcess.start()
             #result = uploadFile(ipPort, fileName)
         elif ACTIONS[message[0]] == ACTIONS['DOWNLOAD']:
@@ -39,13 +38,12 @@ def communicate(port):
             socket.send_string('pull push socket ip have been received')
             fileName = message[1] + '_' + message[2]
             downloadProcess = mp.Process(target=downloadFile, args=(
-                ipPort, fileName, message[3], message[4], message[5]))
+                ipPort,DIR ,fileName, message[3], message[4], message[5]))
             #result = downloadFile(ipPort, message[1], message[2], message[3], message[4], message[5])
             downloadProcess.start()
-            print(result)
 
 
-def uploadFile(ipPort,fileName):
+def uploadFile(ipPort,DIR,fileName):
     
     context = zmq.Context()
     pullSocket = context.socket(zmq.PULL)
@@ -73,7 +71,7 @@ def uploadFile(ipPort,fileName):
     return 0
 
 
-def downloadFile(ipPort,fileName, partNum, chunkSize, numberOfParts):
+def downloadFile(ipPort,DIR,fileName, partNum, chunkSize, numberOfParts):
 
     ## receive download port from the client and connect to it
     
