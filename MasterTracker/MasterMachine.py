@@ -24,7 +24,8 @@ def readMachinesIDs():
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()

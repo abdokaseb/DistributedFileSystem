@@ -17,7 +17,8 @@ def success(portsAvailable,rootIP, port):
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()

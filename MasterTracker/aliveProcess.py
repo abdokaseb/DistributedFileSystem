@@ -13,7 +13,7 @@ def checkLive(timeStam,topics,mydb):
         staticTimeStamp[topic] = [timeStam[topic],0]
 
     dbcursour.execute("UPDATE machines SET isAlive = 0")
-    mydb.commit()
+    # mydb.commit()
     SQL = "UPDATE machines SET isAlive = %s WHERE id = %s "
     
     while True:
@@ -25,13 +25,13 @@ def checkLive(timeStam,topics,mydb):
                 if s[1] > 3:
                     Alive[int(key)] = 0
                     dbcursour.execute(SQL,("0",key))
-                    mydb.commit()
+                    # mydb.commit()
                     
             else:
                 if Alive[int(key)] == 0:
                     Alive[int(key)] = 1
                     dbcursour.execute(SQL,("1",key))
-                    mydb.commit()
+                    # mydb.commit()
 
                 s[0] = value
                 s[1] = 0
@@ -41,7 +41,8 @@ def recevHeartBeat(port = "5556"):
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()

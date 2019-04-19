@@ -16,12 +16,13 @@ def checkLive(portsAvailable,timeStam,topics):
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()
     dbcursour.execute("UPDATE machines SET isAlive = 0")
-    mydb.commit()
+    # mydb.commit()
     dieSQL = "UPDATE machines SET isAlive = 0 WHERE id = %s "
     lifeSQL = "UPDATE machines SET isAlive = 1, IP = INET_ATON(%s) WHERE id = %s "
 
@@ -39,7 +40,7 @@ def checkLive(portsAvailable,timeStam,topics):
                 if s[1] > 3 and Alive[int(key)] != 0:
                     Alive[int(key)] = 0
                     dbcursour.execute(dieSQL,(key,))
-                    mydb.commit()
+                    # mydb.commit()
 
                     print("machine with ID={} and IP={} dead".format(key,recvIP))
                     portsAvailable[recvIP] = []
@@ -50,7 +51,7 @@ def checkLive(portsAvailable,timeStam,topics):
                     print("machine with ID={} and IP={} is alive".format(key,recvIP))
                     Alive[int(key)] = 1
                     dbcursour.execute(lifeSQL,(recvIP,key))
-                    mydb.commit()
+                    # mydb.commit()
 
                     portsAvailable[recvIP] = portsDatanodeClient  
 
