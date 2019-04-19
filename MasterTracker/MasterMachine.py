@@ -17,10 +17,6 @@ from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, p
 
 
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-
 def test(portsAvailable):
     print("start Test")
     while True:
@@ -43,7 +39,7 @@ def readMachinesIDs():
     return  [str(id[0]) for id in idsRows]
 
 if __name__ == "__main__":
-    machineIP = getMachineIP()
+    machineIP = getMyIP()
     print(machineIP)
     machinesIDs = readMachinesIDs()
 

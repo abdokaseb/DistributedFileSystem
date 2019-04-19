@@ -10,10 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(
 
 from constants import portsSlavesClient, N_DATABASE_SLAVES
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+machineIP = getMyIP()
 
 def checkLive(portsAvailable,timeStam):
     staticTimeStamp = {}

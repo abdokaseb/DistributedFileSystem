@@ -8,13 +8,10 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Constants import portsDatanodeClient
+from Constants import portsDatanodeClient,getMyIP
 
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+machineIP = getMyIP()
 
 def checkLive(portsAvailable,timeStam,topics):
     mydb = mysql.connector.connect(
