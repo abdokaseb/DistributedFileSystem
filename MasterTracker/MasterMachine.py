@@ -13,6 +13,7 @@ from replicaProcces import replicate as replicateFunc
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess
+from Util import getMyIP
 
 
 

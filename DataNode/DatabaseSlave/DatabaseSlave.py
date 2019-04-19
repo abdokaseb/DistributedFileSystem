@@ -12,7 +12,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 from aliveDatabaseSlave import sendHeartBeat
 from HandleClients import communicate as CComm
 from HandleMaster import communicate as MCom
-from Constants import portsDatanodeClient, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP,getMyIP
+from Constants import portsDatanodeClient, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP
+from Util import getMyIP
 
 
 

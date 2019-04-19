@@ -12,7 +12,8 @@ from HandleClientsToSlave import communicate as CScomm
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
-from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves,getMyIP
+from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves
+from Util import getMyIP
 
 def test(portsAvailable):
     print("start Test")

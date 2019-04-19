@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsSlavesClient, N_DATABASE_SLAVES
+from Util import getMyIP
 
 machineIP = getMyIP()
 
