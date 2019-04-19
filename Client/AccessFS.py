@@ -62,6 +62,7 @@ def userInput(socket):
     check="1"
     functionCheck=""
     FileName=""
+    
     DIR=""
     while(check=="1"):
         print("Please, Press No. of function you want:")
