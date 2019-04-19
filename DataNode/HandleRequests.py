@@ -11,8 +11,8 @@ import math
 
 ACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1}
 
-#DIR = "../"
-DIR = ''
+DIR = "C:\\Users\\ramym\\Desktop\\nn\\"
+#DIR = ''
 
 def communicate(port):
     
@@ -30,12 +30,18 @@ def communicate(port):
         if ACTIONS[message[0]] == ACTIONS['UPLOAD']:
             ipPort = tuple(socket.recv_string().split(':'))  # receive client upload port
             socket.send_string('pull push socket ip have been received')
-            fileName = message[1] +'_'+ message[2]     
-            result = uploadFile(ipPort, fileName)
-    
-            print (result)
+            fileName = message[1] +'_'+ message[2]  
+            uploadProcess = mp.Process(target=uploadFile, args=(ipPort, fileName))
+            uploadProcess.start()
+            #result = uploadFile(ipPort, fileName)
         elif ACTIONS[message[0]] == ACTIONS['DOWNLOAD']:
-            result = downloadFile(socket, message[1], message[2], message[3],message[4])
+            ipPort = socket.recv_string()
+            socket.send_string('pull push socket ip have been received')
+            fileName = message[1] + '_' + message[2]
+            downloadProcess = mp.Process(target=downloadFile, args=(
+                ipPort, fileName, message[3], message[4], message[5]))
+            #result = downloadFile(ipPort, message[1], message[2], message[3], message[4], message[5])
+            downloadProcess.start()
             print(result)
 
 
@@ -67,24 +73,21 @@ def uploadFile(ipPort,fileName):
     return 0
 
 
-def downloadFile(socket, userId, fileName,partNum,chunkSize):
+def downloadFile(ipPort,fileName, partNum, chunkSize, numberOfParts):
 
     ## receive download port from the client and connect to it
-    ipPort=socket.recv_string()
+    
     context = zmq.Context()
     pushSocket = context.socket(zmq.PUSH)
     pushSocket.bind("tcp://"+ipPort)
 
-    socket.send_string('pull push socket ip have been received')
 
-
-
-    with open(DIR+str(userId)+"_"+fileName, "rb") as f:
+    with open(DIR+fileName, "rb") as f:
         f.seek(0, 2)  # move the cursor to the end of the file
         size = f.tell()
-        size=int (size/6)
+        size = int(size/int(numberOfParts))
         f.seek(int(partNum)*size, 0)  
-        if partNum!=5 :
+        if partNum != int(numberOfParts)-1:
             for i in range(math.floor(size/int(chunkSize))):
                 chunk = f.read(int(chunkSize))
                 pushSocket.send(chunk)

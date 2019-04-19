@@ -10,7 +10,8 @@ from HandleSlaves import SendSlave
 
 def distributorF(qSQLs,ports):
     slavesProcesses = mp.Pool(len(ports))
-    qs = [mp.Manager().Queue() for _ in range(len(ports))]
+    manager = mp.Manager()
+    qs = [manager.Queue() for _ in range(len(ports))]
     slavesProcesses.starmap_async(SendSlave,[(ports[i], qs[i]) for i in range(len(ports))])
 
     while True:

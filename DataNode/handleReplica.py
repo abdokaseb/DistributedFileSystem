@@ -17,6 +17,7 @@ def handleReplica(port):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
         socket.bind("tcp://*:%s" % port)
+        print(" in replica process with port " + str(port))
         if(socket.recv_string()=="READY"):
             socket.send_string("YES")
             recvMsg = socket.recv_json()

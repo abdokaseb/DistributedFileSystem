@@ -5,7 +5,7 @@ import multiprocessing as mp
 import mysql.connector
 
 from aliveThreads import recevHeartBeat
-from HandleDataNode import success as DNSuccess
+from HandleDataNode import uploadSucess as DNSuccess
 from HandleClients import communicate as CComm
 
 
@@ -35,8 +35,9 @@ def readMachinesIDs():
 
 if __name__ == "__main__":
     machineIP = getMachineIP()
+    print(machineIP)
     heartPort = "5556"
-    successPort = "7001"
+    portUploadSucess = "7001"
     portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
     portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
     #portsDataNodeDataNode = ["9001","9002","9003","9004","9009","9006"]
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     aliveProcess = mp.Process(target=recevHeartBeat,args=(portsAvailable,machineIP,heartPort,machinesIDs))
     aliveProcess.start()
 
-    successProcess = mp.Process(target=DNSuccess,args=(portsAvailable,machineIP,successPort))
+    successProcess = mp.Process(target=DNSuccess,args=(machineIP,portUploadSucess))
     successProcess.start()
 
     clientsProcesses = mp.Pool(len(portsMasterClient))

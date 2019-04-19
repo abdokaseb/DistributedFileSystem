@@ -1,4 +1,8 @@
 MasterTracker/__pycache__/*
+MasterTracker/DatabaseMaster/__pycache__/*
+MasterTracker/__pycache__/*
+DataNode/__pycache__/*
+os.txt
 node_1/
 node_2/
 .history/
