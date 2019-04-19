@@ -1,6 +1,7 @@
 MasterTracker/__pycache__/*
 MasterTracker/DatabaseMaster/__pycache__/*
 DataNode/__pycache__/*
+DataNode/videos/*
 Client/__pycache__/*
 *.pyc
 logs/*

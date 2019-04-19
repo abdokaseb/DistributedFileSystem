@@ -237,7 +237,7 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
     
     context = zmq.Context()
     opSocket = context.socket(zmq.REQ)
-    opSocket.connect('tcp://'+port)
+    opSocket.bind('tcp://'+port)
     opSocket.send_string("{} {} {} {} {} {}".format(
         userAction, userId, fileName, partNum, chunkSize, numberOfPorts))
     print("type of operation and user and file and chunkazes name have been send")

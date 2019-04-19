@@ -13,7 +13,6 @@ from Util import getMyIP,getLogger,setLoggingFile
 from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP,defaultAvaliableRepiclaPortsDataNodeDataNode,DIR
 
 
-machineID=1
 
 def handleReplica(port):
     while True:
@@ -87,7 +86,7 @@ if __name__ == "__main__":
 
     #### for client and master
     mainProcesses = NoDaemonPool(len(portsDatanodeClient))
-    mainProcesses.starmap_async(communicate, [(port, DIR) for port in portsDatanodeClient])
+    mainProcesses.starmap_async(communicate, [(port, DIR,machineID) for port in portsDatanodeClient])
     
 
     ############

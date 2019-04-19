@@ -10,10 +10,11 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import math
-from Constants import USERACTIONS as ACTIONS
+from Constants import USERACTIONS as ACTIONS,MASTER_FILESYSTEM_MACHINE_IP,masterPortUploadSucess
 from Util import getMyIP,getLogger
+from doneWork import uploadSucess
 
-def communicate(port, DIR):
+def communicate(port, DIR,machineID):
 
     print("inside process "+port)
 
@@ -24,26 +25,27 @@ def communicate(port, DIR):
         #  Wait for next request from client
         message = socket.recv_string().split()
         print(message)
-        getLogger().info(" in Main loop receving request and request is "+message)
-
+        #getLogger().error("in Main loop receving request and request is ")
+        print(port)
         socket.send_string(
             "client operation info and user Id and have been reveived")
+        print("afterrrrrrrrrrrr seeeend")
 
         if ACTIONS[message[0]] == ACTIONS['UPLOAD']:
             # receive client upload port
             ipPort = tuple(socket.recv_string().split(':'))
-            getLogger().info(" after receiving ports from clinet  " +
-                         " %s : %s " % ipPort)
-
+            #getLogger().info(" after receiving ports from clinet  " +
+            #             " %s : %s " % ipPort)
+            print("afterrrrrrrrrrrr seeeend")
             socket.send_string('pull push socket ip have been received')
             fileName = message[1] + '_' + message[2]
             uploadProcess = mp.Process(
-                target=uploadFile, args=(ipPort, DIR, fileName))
+                target=uploadFile, args=(ipPort, DIR, fileName,machineID))
             uploadProcess.start()
             #result = uploadFile(ipPort, fileName)
         elif ACTIONS[message[0]] == ACTIONS['DOWNLOAD']:
             ipPort = socket.recv_string()
-            getLogger().info(" after receiving ports from clinet  "+ipPort)
+            #getLogger().info(" after receiving ports from clinet  "+ipPort)
 
             socket.send_string('pull push socket ip have been received')
             fileName = message[1] + '_' + message[2]
@@ -53,20 +55,20 @@ def communicate(port, DIR):
             downloadProcess.start()
 
 
-def uploadFile(ipPort, DIR, fileName):
+def uploadFile(ipPort, DIR, fileName,machineID):
 
     context = zmq.Context()
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
     pullSocket.connect("tcp://%s:%s" % ipPort)
 
-    getLogger().info(
+    print(
         " Successful connect to the pull socket and port is  "+"%s:%s" % ipPort)
 
     fileobj = open(DIR+fileName, 'wb+')
 
-    getLogger().info(" start receiving the file  in dir = " +
-                 DIR+"  and file name is = " + fileName)
+    #getLogger().info(" start receiving the file  in dir = " +
+    #             DIR+"  and file name is = " + fileName)
 
     counter = 0
     while True:
@@ -82,11 +84,12 @@ def uploadFile(ipPort, DIR, fileName):
     fileobj.close()
     pullSocket.close()
 
-    getLogger().info(" after finished upload the file  ")
+    #getLogger().info(" after finished upload the file  ")
 
     ######################3
     ####### here we will norify the tracker
-
+    userID,realFileName = fileName.split('_')
+    uploadSucess(MASTER_FILESYSTEM_MACHINE_IP,masterPortUploadSucess,userID, machineID, realFileName)
     return 0
 
 
@@ -96,12 +99,13 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
 
     context = zmq.Context()
     pushSocket = context.socket(zmq.PUSH)
-    pushSocket.bind("tcp://"+ipPort)
+    print(ipPort)
+    pushSocket.connect("tcp://"+ipPort)
 
-    getLogger().info(" after connectiong  to the push socket  ")
+    #getLogger().info(" after connectiong  to the push socket  ")
 
-    getLogger().info(" file parameters     file in  " + DIR + "  " +
-                 fileName+"  part number ="+partNum+"  chunkSize = "+chunkSize + " totla number of parts ="+numberOfParts)
+    #getLogger().info(" file parameters     file in  " + DIR + "  " +
+    #             fileName+"  part number ="+partNum+"  chunkSize = "+chunkSize + " totla number of parts ="+numberOfParts)
 
     with open(DIR+fileName, "rb") as f:
         f.seek(0, 2)  # move the cursor to the end of the file
@@ -129,7 +133,7 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
 
     pushSocket.send(b'')
 
-    getLogger().info(" end download with partnumber = "+partNum)
+    #getLogger().info(" end download with partnumber = "+partNum)
 
     ######################3
     ####### here we will norify the tracker

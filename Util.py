@@ -11,10 +11,11 @@ def getMyIP():
 getMyIP.ip=''
 
 def setLoggingFile(fileName):
-    logging.basicConfig(filename='./logs/'+fileName, filemode='a', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
-    logging.info("garabe") # to create fiel
     with open("./logs/"+fileName,'w') as f:
         clearFile=1;
+    logging.basicConfig(filename='./logs/'+fileName, filemode='a', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
+
+
     
 def getLogger():
     return logging

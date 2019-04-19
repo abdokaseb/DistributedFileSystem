@@ -8,7 +8,7 @@ try:
     elif typeRun == 'MasterTracker':
         os.system("python3 MasterTracker/lookUpTableInit.py")
         os.system("python3 MasterTracker/MasterMachine.py")
-    elif typeRun == 'DataNode':
+    elif typeRun == 'DataNode': 
         machineID = sys.argv[2]
         os.system("python3 DataNode/DataNode.py "+machineID)
     elif typeRun == 'DatabaseMaster':

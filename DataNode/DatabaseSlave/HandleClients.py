@@ -19,7 +19,7 @@ def communicate(port,IP):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://%s:%s" % (IP,port))
-
+    print("bbbbbbbbbbbbbbbbbind  " + "tcp://%s:%s" % (IP,port))
     while True:
         message = socket.recv_string()
         try:

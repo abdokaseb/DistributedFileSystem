@@ -1,8 +1,7 @@
 from replicaUtilities import *
-from Util import getMyIP
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Util import getMyIP,getLogger
+from Util import getMyIP
 
 def rcvTimOut(socket,timeNS):
     poller = zmq.Poller()
@@ -18,7 +17,7 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
     context = zmq.Context()
     socketSrc,socketDst = context.socket(zmq.REQ),context.socket(zmq.REQ)
     confirmSocket = context.socket(zmq.REP)
-    availPort = confirmSocket.bind_to_random_port("tcp://"+getMyIP(),min_port = 1500,max_port = 4000,max_tries = 50)
+    availPort = confirmSocket.bind_to_random_port("tcp://*",min_port = 1500,max_port = 4000,max_tries = 50)
     try:
         socketSrc.connect("tcp://%s:%s" % (srcMach[1],srcMach[2]))
         socketDst.connect("tcp://%s:%s" % (dstMach[1],dstMach[2]))
@@ -41,14 +40,14 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         socketSrc.close()
         removeReplication(fakeUserId,fakeMachId,fileName)
         releasePorts(srcMach,dstMach,availReplicaPorts)
-        getLogger().error("something went wrong on notifying machine "+str(e))
+        logging.error("something went wrong on notifying machine "+str(e))
 
 
 
 def getSrcDstMach(fileName,availReplicaPorts):
     dbcursour = db.cursor()
     srcMachQuery = "select ID,INET_NTOA(IP),UserID from machines,files where isAlive = 1 and machID = ID and fileName ='{}'".format(fileName)
-    dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where fileName !='{}' OR fileName IS NULL".format(fileName)
+    dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where m.isAlive = 1 and (fileName !='{}' OR fileName IS NULL)".format(fileName)
     dbcursour.execute(srcMachQuery)
     srcMachines =  dbcursour.fetchall() 
     dbcursour.execute(dstMachQuery)
@@ -78,13 +77,13 @@ def replicate(availReplicaPorts):
         fillAvailReplicaPorts(availReplicaPorts)
         #print(availReplicaPorts)
         filesToReplicate = getFilesToReplicate()
-        getLogger().info("Files to replicate {}".format(filesToReplicate))
+        logging.info("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
                 srcMach,dstMach = getSrcDstMach(fileName,availReplicaPorts)
-                getLogger().info("file, src_machine ,dst_machine: {} , {}, {}".format(fileName,srcMach,dstMach))
+                logging.info("file, src_machine ,dst_machine: {} , {}, {}".format(fileName,srcMach,dstMach))
             except Exception as e:
-                getLogger().error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
+                logging.error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
             else:
                 fakeUserId, fakeMachId = random.randint(-1000000,-1),random.randint(-1000000,-1) 
                 try:
@@ -92,7 +91,7 @@ def replicate(availReplicaPorts):
                     prc = mp.Process(target = notifyMachinesAndConfirmReplication,args=(srcMach,dstMach,fileName,availReplicaPorts,fakeUserId,fakeMachId)).start()
                 except Exception as e:
                     removeReplication(fakeUserId,fakeMachId,fileName)
-                    getLogger().error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base" + str(e))
+                    logging.error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base" + str(e))
             time.sleep(3)
         time.sleep(6)
 
