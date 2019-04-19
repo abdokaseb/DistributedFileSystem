@@ -13,3 +13,4 @@ MasterTracker/*.pyc
 DataNode/DatabaseSlave/__pycache__/*
 DataNode/__pycache__/*
 __pycache__/*
+logs/*

@@ -8,7 +8,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
-from constants import portsSlavesClient, N_DATABASE_SLAVES
+from Constants import portsSlavesClient, N_DATABASE_SLAVES
 
 def getMachineIP():
     import socket
