@@ -25,13 +25,16 @@ def communicate(port,qSQLs):
     socket.bind("tcp://*:%s" % port)
 
     while True:
-        message = socket.recv_string()
+        userName,Email,Password = socket.recv_string().split(' ')
         try:
-            dbcursour.execute(message)
-            qSQLs.put(message)
-            socket.send_string("Seccess")
+            retriveSql="INSERT INTO Users (UserName, Email, Pass) VALUES ({},{},{});".format(userName,Email,Password)
+            dbcursour.execute(retriveSql)
+            qSQLs.put(retriveSql)
+            retriveSql="Select UserID from Users where UserName={} and Email={} and Pass={}".format(userName,Email,Password)
+            dbcursour.execute(retriveSql)            
+            socket.send_string("{}".format(dbcursour.fetchone()[0]))
         except:
-            socket.send_string("Database Master Exception")
+            socket.send_string("-2")
 
 if __name__ == '__main__':
     pass
