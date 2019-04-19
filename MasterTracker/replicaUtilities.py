@@ -1,5 +1,5 @@
 import sys,zmq,time,mysql.connector,os
-import copy,json,random ,logging,multiprocessing as mp 
+import copy,json,random ,multiprocessing as mp 
 sys.path.append("./")
 from Util import getMyIP
 from Constants import MIN_REPLICA_COUNT,defaultAvaliableRepiclaPortsDataNodeDataNode

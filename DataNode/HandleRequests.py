@@ -6,16 +6,12 @@ import mysql.connector
 import json
 import time
 import os
-import logging
-
-logging.basicConfig(filename='logs/os.log',
-                    filemode='w', format='%(name)s - %(levelname)s - %(message)s', level="INFO")
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import math
 from Constants import USERACTIONS as ACTIONS
-from Util import getMyIP
+from Util import getMyIP,getLogger
 
 
 def communicate(port, DIR):
@@ -29,7 +25,7 @@ def communicate(port, DIR):
         #  Wait for next request from client
         message = socket.recv_string().split()
         print(message)
-        logging.info(" in Main loop receving request and request is "+message)
+        getLogger().info(" in Main loop receving request and request is "+message)
 
         socket.send_string(
             "client operation info and user Id and have been reveived")
@@ -37,7 +33,7 @@ def communicate(port, DIR):
         if ACTIONS[message[0]] == ACTIONS['UPLOAD']:
             # receive client upload port
             ipPort = tuple(socket.recv_string().split(':'))
-            logging.info(" after receiving ports from clinet  " +
+            getLogger().info(" after receiving ports from clinet  " +
                          " %s : %s " % ipPort)
 
             socket.send_string('pull push socket ip have been received')
@@ -48,7 +44,7 @@ def communicate(port, DIR):
             #result = uploadFile(ipPort, fileName)
         elif ACTIONS[message[0]] == ACTIONS['DOWNLOAD']:
             ipPort = socket.recv_string()
-            logging.info(" after receiving ports from clinet  "+ipPort)
+            getLogger().info(" after receiving ports from clinet  "+ipPort)
 
             socket.send_string('pull push socket ip have been received')
             fileName = message[1] + '_' + message[2]
@@ -65,12 +61,12 @@ def uploadFile(ipPort, DIR, fileName):
     pullSocket.hwm = 10
     pullSocket.connect("tcp://%s:%s" % ipPort)
 
-    logging.info(
+    getLogger().info(
         " Successful connect to the pull socket and port is  "+"%s:%s" % ipPort)
 
     fileobj = open(DIR+fileName, 'wb+')
 
-    logging.info(" start receiving the file  in dir = " +
+    getLogger().info(" start receiving the file  in dir = " +
                  DIR+"  and file name is = " + fileName)
 
     counter = 0
@@ -80,14 +76,14 @@ def uploadFile(ipPort, DIR, fileName):
         counter = counter+1
         if chunk is b'':
             print('condition satisfied')
-            logging.info(" receving end of transmition from the client")
+            getLogger().info(" receving end of transmition from the client")
             break
         fileobj.write(chunk)
 
     fileobj.close()
     pullSocket.close()
 
-    logging.info(" after finished upload the file  ")
+    getLogger().info(" after finished upload the file  ")
 
     ######################3
     ####### here we will norify the tracker
@@ -103,9 +99,9 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
     pushSocket = context.socket(zmq.PUSH)
     pushSocket.bind("tcp://"+ipPort)
 
-    logging.info(" after connectiong  to the push socket  ")
+    getLogger().info(" after connectiong  to the push socket  ")
 
-    logging.info(" file parameters     file in  " + DIR + "  " +
+    getLogger().info(" file parameters     file in  " + DIR + "  " +
                  fileName+"  part number ="+partNum+"  chunkSize = "+chunkSize + " totla number of parts ="+numberOfParts)
 
     with open(DIR+fileName, "rb") as f:
@@ -134,7 +130,7 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
 
     pushSocket.send(b'')
 
-    logging.info(" end download with partnumber = "+partNum)
+    getLogger().info(" end download with partnumber = "+partNum)
 
     ######################3
     ####### here we will norify the tracker
