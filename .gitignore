@@ -15,3 +15,4 @@ MasterTracker/*.pyc
 DataNode/DatabaseSlave/__pycache__/*
 __pycache__/*
 Client/__pycache__/AccessFS.cpython-36.pyc
+RunMachinesRamy.py
