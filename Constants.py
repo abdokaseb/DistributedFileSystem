@@ -14,7 +14,7 @@ portsdatabaseSlaves = ["8001", "8002", "8003", "8004", "8005", "8006"]
 DatabaseportToListenSlaves = "8101"
 N_DATABASE_SLAVES=5
 ############
-masterPortUploadSucess = "7001"
+masterPortUploadSucess = "7010"
 masterHeartPort = "5556"
 
 ############### replica constanta
@@ -22,7 +22,7 @@ MIN_REPLICA_COUNT = 2
 
 ###### used as constant in client to access master to send request ( ls ,upload ,download)
 masterClientPorts = ["5001", "5002", "5003", "5004", "5005", "5006"]
-clientDownloadPorts = ["8001", "8002", "8003", "8004", "8005", "8006"]
+clientDownloadPorts = ["8501", "8502", "8503", "8504", "8505", "8506"]
 portsHandleClentsToSlaves = ["8201", "8202", "8203", "8204", "8205", "8206"]
 portsdatabaseClients = ["7001", "7002", "7003", "7004", "7005", "7006"]
 
