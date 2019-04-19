@@ -1,7 +1,7 @@
 from replicaUtilities import *
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Util import getMyIP
+from Util import getMyIP,getLogger
 
 def rcvTimOut(socket,timeNS):
     poller = zmq.Poller()
@@ -40,7 +40,7 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         socketSrc.close()
         removeReplication(fakeUserId,fakeMachId,fileName)
         releasePorts(srcMach,dstMach,availReplicaPorts)
-        logging.error("something went wrong on notifying machine "+str(e))
+        getLogger().error("something went wrong on notifying machine "+str(e))
 
 
 
@@ -58,32 +58,35 @@ def getSrcDstMach(fileName,availReplicaPorts):
     for machId,machIP,userID in srcMachines:
         if(len(availReplicaPorts[machId])>0):
             srcMachine = machId ,machIP, availReplicaPorts[machId][0],userID
-        else:
-            return None
+            break;
+
+    if(srcMachine == None):
+        raise(Exception())
 
     for machId,machIP in dstMachines:
-        if(len(availReplicaPorts[machId])>0):
+        if(len(availReplicaPorts[machId])>0 and machId != srcMachine[0]):
             dstMachine = machId, machIP, availReplicaPorts[machId][0]
             a , b = availReplicaPorts[machId],availReplicaPorts[srcMachine[0]]
             a.pop(0) ; b.pop(0)
             availReplicaPorts[machId],availReplicaPorts[srcMachine[0]] = a,b
             return srcMachine,dstMachine
-        else:
-            return None
-        
+            
+    if(dstMachine == None):
+        raise(Exception())
+
+
 
 def replicate(availReplicaPorts):
     while True:
         fillAvailReplicaPorts(availReplicaPorts)
-        #print(availReplicaPorts)
         filesToReplicate = getFilesToReplicate()
-        logging.info("Files to replicate {}".format(filesToReplicate))
+        getLogger().info("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
                 srcMach,dstMach = getSrcDstMach(fileName,availReplicaPorts)
-                logging.info("file, src_machine ,dst_machine: {} , {}, {}".format(fileName,srcMach,dstMach))
+                getLogger().info("file, src_machine ,dst_machine: {} , {}, {}".format(fileName,srcMach,dstMach))
             except Exception as e:
-                logging.error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
+                getLogger().error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
             else:
                 fakeUserId, fakeMachId = random.randint(-1000000,-1),random.randint(-1000000,-1) 
                 try:
@@ -91,25 +94,25 @@ def replicate(availReplicaPorts):
                     prc = mp.Process(target = notifyMachinesAndConfirmReplication,args=(srcMach,dstMach,fileName,availReplicaPorts,fakeUserId,fakeMachId)).start()
                 except Exception as e:
                     removeReplication(fakeUserId,fakeMachId,fileName)
-                    logging.error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base" + str(e))
+                    getLogger().error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base " + str(e))
             time.sleep(3)
         time.sleep(6)
 
 if __name__ == "__main__": 
-    machines_files = [(10,8,'B.avi'),(11,3,'V.avi')]#,(3,'gello.txt'),(2,'cello.txt'),(1,'hello.txt'),(2,'hello.txt'),(10,'cello.txt')]
-    ip = getMyIP();
-    rq = "delete from files"
-    q = "insert into files values({},{},'{}')"
-    qa = "update machines set isAlive = 1,IP = INET_ATON('{}') where ID = {}"
-    dbcursor = db.cursor()
-    dbcursor.execute(rq)
-    db.commit()
-    for uid,m,f in machines_files:
-        dbcursor.execute(q.format(uid,m,f))
-        #if(random.randint(0,9)%2==0):
-        dbcursor.execute(qa.format(ip,m))
-        dbcursor.execute(qa.format(ip,8))
-        db.commit()
+    # machines_files = [(10,8,'B.avi'),(11,3,'V.avi')]#,(3,'gello.txt'),(2,'cello.txt'),(1,'hello.txt'),(2,'hello.txt'),(10,'cello.txt')]
+    # ip = getMyIP();
+    # rq = "delete from files"
+    # q = "insert into files values({},{},'{}')"
+    # qa = "update machines set isAlive = 1,IP = INET_ATON('{}') where ID = {}"
+    # dbcursor = db.cursor()
+    # dbcursor.execute(rq)
+    # db.commit()
+    # for uid,m,f in machines_files:
+    #     dbcursor.execute(q.format(uid,m,f))
+    #     #if(random.randint(0,9)%2==0):
+    #     dbcursor.execute(qa.format(ip,m))
+    #     dbcursor.execute(qa.format(ip,8))
+    #     db.commit()
     
     availReplicaPorts = mp.Manager().dict({1:['1111','1112','1113'],0:['2220','2222','2223'],3:['3331','3332','3333'],8:['8881','8882','8883'],10:['9991','9992','9993']})
     #availReplicaPorts = mp.Manager().dict()

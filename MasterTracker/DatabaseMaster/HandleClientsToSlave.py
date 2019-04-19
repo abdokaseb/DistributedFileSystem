@@ -10,18 +10,19 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient
-from Util import getMyIP
+from Util import getMyIP, getLogger
 
 def communicate(portsAvailable,port):
-    # logging.info("Port {} start to listen to clients".format(port))
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://%s:%s" % (getMyIP(),port))
+    getLogger().info("DNS with port {} listen to clients".format(port))
     while True:
         for slaveIP in portsAvailable.keys():
             m = socket.recv_string()
             portIndex = random.randint(0,len(portsAvailable[slaveIP])-1)
             socket.send_string('{}:{}'.format(slaveIP,portsAvailable[slaveIP][portIndex]))
+            getLogger().info("DNS with port {} listen sent answer {}:{} to client".format(port,slaveIP,portsAvailable[slaveIP][portIndex]))
             # logging.info("Port {} replied with IP:Port number {}:{}".format(port,portsAvailable[slaveIP][portIndex]))
 
         

@@ -7,7 +7,7 @@ import copy
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Constants import portsDatanodeClient
-from Util import getMyIP
+from Util import getMyIP, getLogger
 
 
 machineIP = getMyIP()
@@ -48,6 +48,7 @@ def success(portsAvailable,rootIP, port):
         portsAvailable[rows[0][0]] = a
 
 def uploadSucess (rootIP, port):
+    getLogger().info("uploadSucess Port {} started".format(port))
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -61,10 +62,11 @@ def uploadSucess (rootIP, port):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind ("tcp://%s:%s" % (rootIP, port))
-    SQL = "INSERT INTO files (UserID, mcahID, fileName) VALUES (%s,%s,%s)"
+    SQL = "INSERT INTO files (UserID, machID, fileName) VALUES (%s,%s,%s)"
     while True:
         UserID, mcahID, fileName = socket.recv_string().split()
         dbcursour.execute(SQL,(UserID, mcahID, fileName))
+        getLogger().info("receced UserID={}, machID={}, fileName={} uploded sucessfully".format(UserID, mcahID, fileName))
         socket.send_string("1")
 
 if __name__ == "__main__": 

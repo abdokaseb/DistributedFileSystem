@@ -32,5 +32,4 @@ portsDatanodeDatanode = ["6101", "6102","6103", "6104", "6105", "6106", "6107"]
 defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
 
 
-
 clientUploadIpPort = (getMyIP(), "7225")

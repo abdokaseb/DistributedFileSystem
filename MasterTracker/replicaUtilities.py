@@ -21,9 +21,7 @@ def fakeReplication(fakeUserID,fakeMachId,fileName):
     dbcursour.execute(insertFakeRecodQuery)
 
 def releasePorts(srcMachine,dstMachine,availReplicaPorts):
-    print(availReplicaPorts[srcMachine[0]])
     a,b = availReplicaPorts[srcMachine[0]],availReplicaPorts[dstMachine[0]] 
-    print(a)
     a.append(srcMachine[2]) ; b.append(dstMachine[2])
     availReplicaPorts[srcMachine[0]], availReplicaPorts[dstMachine[0]]= a,b
 
@@ -62,4 +60,3 @@ def fillAvailReplicaPorts(availReplicaPorts):
     for id in ids:
         if(id[0] not in existedIds):
             availReplicaPorts[id[0]] = defaultAvaliableRepiclaPortsDataNodeDataNode
-    
