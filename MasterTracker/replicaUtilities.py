@@ -2,7 +2,8 @@ import sys,zmq,time,mysql.connector
 import multiprocessing as mp ,copy,json,random ,logging
 
 # INET_NTOA IPuintToStr 
-#logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
+defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
 
 minReplicasCount = 2
 
@@ -10,7 +11,8 @@ db = mysql.connector.connect(
             host="localhost",
             user="root",
             passwd="",
-            database="lookUpData"
+            database="lookUpData",
+            autocommit = True
         )
 
 
@@ -18,7 +20,6 @@ def fakeReplication(fakeUserID,fakeMachId,fileName):
     dbcursour = db.cursor()
     insertFakeRecodQuery = "insert into files  values ({},{},'{}')".format(fakeUserID,fakeMachId,fileName)
     dbcursour.execute(insertFakeRecodQuery)
-    db.commit()
 
 def releasePorts(srcMachine,dstMachine,availReplicaPorts):
     print(availReplicaPorts[srcMachine[0]])
@@ -33,14 +34,12 @@ def confirmReplication(fakeUserID,fakeMachId,realUserID,realMachId,fileName):
     insertFakeRecodQuery = "update files set UserID={}, machID={} where fileName='{}' and UserID={} and machID={}"
     insertFakeRecodQuery = insertFakeRecodQuery.format(realUserID,realMachId,fileName,fakeUserID,fakeMachId)
     dbcursour.execute(insertFakeRecodQuery)
-    db.commit()
 
 def removeReplication(fakeUserID,fakeMachId,fileName):
     dbcursour = db.cursor()
     removeFakeRecodQuery = "delete from files where fileName='{}' and UserID={} and machID={}"
     removeFakeRecodQuery = removeFakeRecodQuery.format(fileName,fakeUserID,fakeMachId)
     dbcursour.execute(removeFakeRecodQuery)
-    db.commit()
 
 
 def getMachinesCount():
@@ -56,6 +55,15 @@ def getFilesToReplicate():
     dbcursour.execute(countFilesReplicasQuery)
     return dbcursour.fetchall() 
 
+def fillAvailReplicaPorts(availReplicaPorts):
+    dbcursour = db.cursor()
+    dbcursour.execute("select id from machines")
+    ids = dbcursour.fetchall()
+    existedIds = availReplicaPorts.keys()
+    for id in ids:
+        if(id[0] not in existedIds):
+            availReplicaPorts[id[0]] = defaultAvaliableRepiclaPortsDataNodeDataNode
+    
 
 def getMyIP():
     import socket

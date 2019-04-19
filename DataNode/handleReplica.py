@@ -1,31 +1,28 @@
-import sys
-import zmq
-import json
-import multiprocessing as mp
-import time
-import sys
-sys.path.insert(0,"../DataNode/")
-sys.path.insert(0,"../Client/")
-sys.path.insert(0,"../MsterTracker/")
+import json,zmq,logging,time,sys,multiprocessing as mp
+sys.path.extend(["DataNode/","Client/","MasterTracker/"])
 from HandleRequests import uploadFile as uploadDst
 from AccessFS import Upload as uploadSrc
 from replicaUtilities import getMyIP
+from DataNode import machineId
 
+
+logging.basicConfig(filename='logs/DataNodeReplic.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
 
 def handleReplica(port):
     while True:
         context = zmq.Context()
         socket = context.socket(zmq.REP)
         socket.bind("tcp://*:%s" % port)
-        print(" in replica process with port " + str(port))
+        logging.info("A Replica Process alive with ports" + str(port))
         if(socket.recv_string()=="READY"):
             socket.send_string("YES")
             recvMsg = socket.recv_json()
             socket.setsockopt(zmq.LINGER, 0)  #clear socket buffer
             socket.close()
-            print(recvMsg)
+            logging.info("RECIVED MESSAGE "+ recvMsg)
             if(recvMsg['src']==True):
-                print("i will send replica")
+                logging.info("My ID is {} and I will send replica".format(machineId))
                 context = zmq.Context()
                 successSocket = context.socket(zmq.REQ)
                 successSocket.connect("tcp://%s:%s" % tuple(recvMsg['confirmSuccesOnIpPort']))
@@ -34,25 +31,25 @@ def handleReplica(port):
                     uploadSrc((getMyIP(),port),str(recvMsg['userID']) +'_'+recvMsg['fileName'])          
                     successSocket.send_string("success")
                 except Exception as e:
-                    print("Upload failed on src machine")
-                    print(e)
+                    logging.info("My ID is {} and Upload failed ".format(machineId) + str(e))
                 successSocket.setsockopt(zmq.LINGER, 0)
                 successSocket.close()
             elif (recvMsg['src']==False):
                 #mach = '../node_2/' if recvMsg['userID'] == 10 else '../node_1/'
-                print("i will recv replica")
+                logging.info("My ID is {} and I will recv replica".format(machineId) + str(recvMsg['userID']) +'_'+recvMsg['fileName'])
                 try:
-                    print(mach+str(recvMsg['userID']) +'_'+recvMsg['fileName'])
                     uploadDst(tuple(recvMsg['recvFromIpPort']),str(recvMsg['userID']) +'_'+recvMsg['fileName'])  
                 except Exception as e:
-                    print("Upload failed on dst machine")
-                    print(e)
+                    logging.info("My ID is {} and Upload failed on dst machine ".format(machineId) + str(e))
         else:
             socket.close()
             
-        
+
+
+def startHandleReplica():
+    handleReplicaProcesses = mp.Pool(len(defaultAvaliableRepiclaPortsDataNodeDataNode))
+    handleReplicaProcesses.map(handleReplica,defaultAvaliableRepiclaPortsDataNodeDataNode)
     
-#python handleReplica.py 3331,2221,8881,5551,1111
 if __name__ == "__main__":
     ports = sys.argv[1].split(',')
     replicaProcesses = mp.Pool(len(ports))
