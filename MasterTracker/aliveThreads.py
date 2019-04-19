@@ -11,10 +11,7 @@ logging.basicConfig(level="INFO",filename='logs/aliveMastertraker.log', filemode
 from Constants import portsDatanodeClient
 
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+machineIP = getMyIP()
 
 def checkLive(portsAvailable,timeStam,topics):
     mydb = mysql.connector.connect(

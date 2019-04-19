@@ -1,4 +1,4 @@
-import json,zmq,logging,time,sys,multiprocessing as mp
+import json,zmq,logging,time,os,sys,multiprocessing as mp
 sys.path.extend(["DataNode/","Client/","MasterTracker/","./"])
 import multiprocessing.pool
 import mysql.connector
@@ -10,8 +10,8 @@ from alive import sendHeartBeat
 from AccessFS import Upload as uploadSrc
 from Util import getMyIP
 
-from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP,defaultAvaliableRepiclaPortsDataNodeDataNode
-logging.basicConfig(level="INFO",filename='logs/DataNodeReplic.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP,defaultAvaliableRepiclaPortsDataNodeDataNode,DIR
+logging.basicConfig(filename='logs/DataNodeReplic.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
 
 
 machineID=1
@@ -72,20 +72,19 @@ class NoDaemonPool(multiprocessing.pool.Pool):
         super(NoDaemonPool, self).__init__(*args, **kwargs)
 
 
-def Test():
-    import wmi
-    c = wmi.WMI()
+# def Test():
+#     import wmi
+#     c = wmi.WMI()
 
-    while True :
-        for process in c.Win32_Process():
-            print (process.ProcessId, process.Name)
-        time.sleep(10)
+#     while True :
+#         for process in c.Win32_Process():
+#             print (process.ProcessId, process.Name)
+#         time.sleep(10)
 
 if __name__ == "__main__":
 
     machineID = int(sys.argv[1])
 
-    DIR = sys.argv[2]
 
     #### for client and master
     mainProcesses = NoDaemonPool(len(portsDatanodeClient))
@@ -93,14 +92,14 @@ if __name__ == "__main__":
     
 
     ############
-    testProcess = mp.Process(target=Test)
-    testProcess.start()
+    #testProcess = mp.Process(target=Test)
+    #testProcess.start()
     ############
 
 
     #### replica processes
     handleReplicaProcesses = mp.Pool(len(defaultAvaliableRepiclaPortsDataNodeDataNode))
-    handleReplicaProcesses.map(handleReplica,defaultAvaliableRepiclaPortsDataNodeDataNode)
+    handleReplicaProcesses.map_async(handleReplica,defaultAvaliableRepiclaPortsDataNodeDataNode)
 
     ################ alive process 
     aliveProcesses = mp.Process(target=sendHeartBeat, args=(

@@ -12,11 +12,7 @@ from HandleClientsToSlave import communicate as CScomm
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
-from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves
-
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
+from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves,getMyIP
 
 def test(portsAvailable):
     print("start Test")
@@ -26,7 +22,7 @@ def test(portsAvailable):
 
 if __name__ == "__main__":
 
-    machineIP = getMachineIP()
+    machineIP = getMyIP()
     manager = mp.Manager()
     sqlQueue = manager.Queue()
     distributorProcess = mp.Process(target=distributorF,args=(sqlQueue,portsdatabaseSlaves))

@@ -6,10 +6,7 @@ import multiprocessing as mp
 
 
 machineID = int(sys.argv[1])
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+
 
 def success(machineID,finishEvent,portFinished,rootIP = "127.0.0.1",rootPort = "5556"):
     

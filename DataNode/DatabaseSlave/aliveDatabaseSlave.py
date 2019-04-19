@@ -4,13 +4,8 @@ import sys
 import time
 
 
-# machineID = int(sys.argv[1])
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
 
-def sendHeartBeat(machineID,rootIP = "127.0.0.1",port = "5556"):
+def sendHeartBeat(machineID,rootIP = "127.0.0.1",port = "5556",machineIP=''):
     
     topic = machineID
 

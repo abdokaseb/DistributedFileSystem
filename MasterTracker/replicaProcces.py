@@ -1,7 +1,7 @@
 from replicaUtilities import *
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-logging.basicConfig(level="INFO",filename='logs/MasterReplica.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='logs/MasterReplica.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
 from Util import getMyIP
 
 def rcvTimOut(socket,timeNS):
