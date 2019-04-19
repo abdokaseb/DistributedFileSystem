@@ -5,19 +5,17 @@ import multiprocessing as mp
 import mysql.connector
 import json
 import os
-import logging
 import random
-logging.basicConfig(level="INFO",filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Constants import portsDatanodeClient, USERACTIONS
-from Util import getMyIP
+from Util import getLogger,getMyIP
+
 
 #USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
 
 def communicate(portsAvailable,port):
-    logging.info("Start lisent to clients from port {}".format(port))
+    getLogger().info("Start lisent to clients from port {}".format(port))
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -33,7 +31,7 @@ def communicate(portsAvailable,port):
     while True:
         #  Wait for next request from client
         message = socket.recv_string().split()
-        logging.info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],message[1]))
+        getLogger().info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],message[1]))
         if int(message[1]) == USERACTIONS['LS']:
             result = listFiles(message[0],dbcursour)
             socket.send_json(result)
@@ -43,7 +41,7 @@ def communicate(portsAvailable,port):
         elif int(message[1]) == USERACTIONS['DOWNLOAD']:
             result = downloadFile(message[0],message[2],dbcursour,portsAvailable)
             socket.send_json(result)
-        logging.info("Port {} replied to client with id={}".format(port,message[0]))
+        getLogger().info("Port {} replied to client with id={}".format(port,message[0]))
         
 
 def listFiles(userID,dbcursour):

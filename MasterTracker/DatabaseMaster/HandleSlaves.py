@@ -5,17 +5,15 @@ import multiprocessing as mp
 import mysql.connector
 import json
 import os
-import logging
-logging.basicConfig(level="INFO",filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient
-from Util import getMyIP
+from Util import getLogger,getMyIP
 
 def SendSlave(port,qSQLs):
-    logging.info("Port {} start to listen to slaves".format(port))
+    getLogger().info("Port {} start to listen to slaves".format(port))
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.bind("tcp://%s:%s" % (getMyIP(),port))

@@ -13,11 +13,12 @@ from aliveDatabaseSlave import sendHeartBeat
 from HandleClients import communicate as CComm
 from HandleMaster import communicate as MCom
 from Constants import portsDatanodeClient, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP
-from Util import getMyIP
+from Util import getMyIP,setLoggingFile
 
 
 
 if __name__ == "__main__":
+    setLoggingFile("DatabaseSlave.log")
     machineIP = getMyIP()
     print(machineIP)
     machineID = 2

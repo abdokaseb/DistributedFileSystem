@@ -5,19 +5,18 @@ import multiprocessing as mp
 import mysql.connector
 import json
 import os
-import logging
-logging.basicConfig(level="INFO",filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from HandleSlaves import SendSlave
 from Constants import portsDatanodeClient
+from Util import getLogger
 
 
 
 def distributorF(qSQLs,ports):
-    logging.info("Distrupeter up")
+    getLogger().info("Distrupeter up")
     slavesProcesses = mp.Pool(len(ports))
     manager = mp.Manager()
     qs = [manager.Queue() for _ in range(len(ports))]
@@ -25,7 +24,7 @@ def distributorF(qSQLs,ports):
 
     while True:
         message = qSQLs.get()
-        logging.info("Distuputer send message {}".format(message))
+        getLogger().info("Distuputer send message {}".format(message))
         for q in qs: q.put(message)
 
         
