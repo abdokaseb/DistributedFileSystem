@@ -7,7 +7,7 @@ import mysql.connector
 from aliveDatabaseSlave import sendHeartBeat
 from HandleClients import communicate as CComm
 from HandleMaster import communicate as MCom
-from Constants import portsDatanodeClient, portsdatabaseSlaves, DatabaseportToListenSlaves
+from Constants import portsDatanodeClient, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP
 
 def getMachineIP():
     import socket
@@ -17,14 +17,14 @@ def getMachineIP():
 if __name__ == "__main__":
     machineIP = getMachineIP()
     machineID = 2
-    rootIP = "127.0.0.1"
-    portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
+    #rootIP = "127.0.0.1"
 
     aliveProcess = mp.Process(target=sendHeartBeat, args=(
-        1, rootIP, DatabaseportToListenSlaves))
+        1, MASTER_DATABASE_MACHINE_IP, DatabaseportToListenSlaves))
     aliveProcess.start()
 
-    masterProcess = mp.Process(target=MCom,args=(portsdatabaseSlaves[machineID],rootIP))
+    masterProcess = mp.Process(target=MCom, args=(
+        portsdatabaseSlaves[machineID], MASTER_DATABASE_MACHINE_IP))
     masterProcess.start()
 
     clientsProcesses = mp.Pool(len(portsDatanodeClient))
