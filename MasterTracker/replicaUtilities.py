@@ -1,11 +1,10 @@
 import sys,zmq,time,mysql.connector
-import multiprocessing as mp ,copy,json,random ,logging
+import copy,json,random ,logging,multiprocessing as mp 
+sys.path.append("./")
+from Util import getMyIP
+from Constants import MIN_REPLICA_COUNT,defaultAvaliableRepiclaPortsDataNodeDataNode
 
 # INET_NTOA IPuintToStr 
-
-defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
-
-minReplicasCount = 2
 
 db = mysql.connector.connect(
             host="localhost",
@@ -49,7 +48,7 @@ def getMachinesCount():
     
 
 def getFilesToReplicate():
-    minRepCnt = min(getMachinesCount(), minReplicasCount)
+    minRepCnt = min(getMachinesCount(), MIN_REPLICA_COUNT)
     dbcursour = db.cursor()
     countFilesReplicasQuery = "select fileName,count(*) as 'repCnt' from files group by(fileName) having repCnt < {}".format(minRepCnt)
     dbcursour.execute(countFilesReplicasQuery)
@@ -64,7 +63,3 @@ def fillAvailReplicaPorts(availReplicaPorts):
         if(id[0] not in existedIds):
             availReplicaPorts[id[0]] = defaultAvaliableRepiclaPortsDataNodeDataNode
     
-
-def getMyIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())

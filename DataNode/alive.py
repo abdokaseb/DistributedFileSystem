@@ -2,12 +2,11 @@ import zmq
 import random
 import sys
 import time
+from Util import getMyIP
 
 machineID = int(sys.argv[1])
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+
+machineIP = getMyIP()
 
 def sendHeartBeat(machineID,rootIP = "192.168.1.9",port = "5556"):
     

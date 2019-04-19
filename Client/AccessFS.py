@@ -6,17 +6,11 @@ import os
 import threading as th
 import random
 sys.path.insert(0,"../MasterTracker/")
-from replicaUtilities import getMyIP
+
+from Constants import CHUNK_SIZE,USERACTIONS, MASTER_DATABASE_MACHINE_IP, clientDownloadPorts, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts
 
 _FINISHTHREAD = 0
 
-MasterMachineIP = '192.168.137.147'
-portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
-clientDownloadPorts = ["8001", "8002", "8003", "8004","8005", "8006"]
-portsHandleClentsToSlaves = ["8201","8202","8203","8204","8205","8206"] 
-portsdatabaseClients=["7001","7002","7003","7004","7005","7006"]
-DIR = "E:\\Alb 3ammar"
-clientUploadIpPort= (getMyIP(),"7005")
  
 def userInput(socket):
     UserID=-2;
@@ -32,7 +26,7 @@ def userInput(socket):
             print("Please Enter Your Password")
             Password= input()
             #Kasep Function Call to check the User Data Using Slaves and ID Update
-            UserID=requestDatabaseSlave(MasterMachineIP,portsHandleClentsToSlaves,UserName,Password)
+            UserID=requestDatabaseSlave(MASTER_DATABASE_MACHINE_IP,portsHandleClentsToSlaves,UserName,Password)
             if(UserID== -2):
                 #print(ErrorMessage)
                 print("Press 1 to End process or 2 to enter again")
@@ -45,7 +39,7 @@ def userInput(socket):
             print("Please Enter your Password")
             Password= input()
             #Kaseb Function Call to insert user in the database and ID Update
-            UserID=SignUp(MasterMachineIP,portsMasterClient,userName,EmailAddress,Password) #Needs Check
+            UserID=SignUp(MASTER_DATABASE_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) #Needs Check
             if(UserID==-2):
                 print(ErrorMessage)
                 print("Press 1 to End process or 2 to enter again")
@@ -60,6 +54,7 @@ def userInput(socket):
     check="1"
     functionCheck=""
     FileName=""
+    DIR=""
     while(check=="1"):    
         if(Function =="1"):
             #Fuction Call for LS
@@ -70,9 +65,11 @@ def userInput(socket):
             check=input()
         elif(Function =="2"):
             #Fuction Call for Download
+            print("Please, Enter the fileName to be directory of the file to be downloaded in ")
+            DIR = input()
             print("Please, Enter the fileName to be downloaded")
-            FileName=input()
-            DownloadAction("DOWNLOAD",socket,FileName,UserID)
+            FileName = input()
+            DownloadAction("DOWNLOAD",socket,DIR,FileName,UserID)
             if(functionCheck=="-1"):
                 print(ErrorMessage)
             print("Please Press 1 to Use another function or 2 to End")
@@ -125,12 +122,14 @@ def Upload(ipPort, fileName):
     pushSocket.send(b'')                       ## send EOF to end push pull comminucation
     pushSocket.close()
     ####################################
-def Download(DataNodePorts):
+
+
+def Download(DataNodePorts, DIR, fileName, userID, userAction):
     ########################################
     ####### using datanode returend from the master to establish comminucation to upload the file
     print(DataNodePorts)
 
-    CHUNK_SIZE = 500
+    #CHUNK_SIZE = 500
     ports = [port for port in DataNodePorts]
     parts = [partNum for partNum in range(len(DataNodePorts))]
     userIDs = [userID for i in range(len(DataNodePorts))]
@@ -170,7 +169,7 @@ def Download(DataNodePorts):
 
     ############################
     ####################################
-def DownloadAction(userAction,socket,fileName,userID):
+def DownloadAction(userAction,socket,DIR,fileName,userID):
     socket.send_string("{} {} {}".format(userID,USERACTIONS[userAction],fileName))
 
     message = socket.recv_json()  #this message is the array of [IP:port] of size 6 for the mechine (e.g [192.168.1.9:5554,.....,])
@@ -178,12 +177,13 @@ def DownloadAction(userAction,socket,fileName,userID):
     print(message)
     message = json.loads(message)
 
-    Download(message)
+    Download(message, DIR, fileName, userID, userAction)
         
-        #print(message)
-        #if message == "ERROR 404":
-        #    print("Sorry We Are Very Busy")
-        #pass
+    print(message)
+    if message == "ERROR 404":
+        print("Sorry We Are Very Busy")
+        pass
+
 def LSAction(userAction,socket,userID):
     socket.send_string("{} {} {}".format(userID,USERACTIONS[userAction],''))
     message = socket.recv_json()
@@ -263,7 +263,7 @@ if __name__ == "__main__":
 
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
-    for port in portsMasterClient: socket.connect ("tcp://%s:%s" % (portsMasterClient,port))
+    for port in masterClientPorts: socket.connect ("tcp://%s:%s" % (masterClientPorts,port))
 
     userInput(socket)
     socket.close()  

@@ -5,6 +5,7 @@ import multiprocessing as mp
 import mysql.connector
 import json
 from HandleSlaves import SendSlave
+from Constants import portsDatanodeClient
 
 
 
@@ -25,7 +26,6 @@ def distributorF(qSQLs,ports):
 if __name__ == '__main__':
     pass
     # portsMasterClient = ["5556"]
-    # portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
 
     # mydb = mysql.connector.connect(
     #     host="localhost",

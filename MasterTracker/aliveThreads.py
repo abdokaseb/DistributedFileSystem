@@ -4,7 +4,9 @@ import time
 import threading 
 import mysql.connector
 import copy
-portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
+
+from Constants import portsDatanodeClient
+
 
 def getMachineIP():
     import socket
