@@ -3,11 +3,15 @@ import zmq
 import time
 import multiprocessing as mp 
 import mysql.connector
-
+import os
 from HandleClients import communicate
 from distributor import distributorF
 from trackSlaves import recevHeartBeat as HBSlaves
 from HandleClientsToSlave import communicate as CScomm
+
+sys.path.append(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))))
+
 from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves
 
 def getMachineIP():

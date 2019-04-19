@@ -20,9 +20,6 @@ masterHeartPort = "5556"
 ############### replica constanta
 MIN_REPLICA_COUNT = 2
 
-
-
-
 ###### used as constant in client to access master to send request ( ls ,upload ,download)
 masterClientPorts = ["5001", "5002", "5003", "5004", "5005", "5006"]
 clientDownloadPorts = ["8001", "8002", "8003", "8004", "8005", "8006"]

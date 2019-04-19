@@ -2,7 +2,10 @@ import json,zmq,logging,time,sys,multiprocessing as mp
 sys.path.extend(["DataNode/","Client/","MasterTracker/","./"])
 import multiprocessing.pool
 import mysql.connector
-from HandleRequests import communicate,uploadFile as uploadDs
+from HandleRequests import communicate,uploadFile as uploadDst
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from alive import sendHeartBeat
 from AccessFS import Upload as uploadSrc
 from Util import getMyIP

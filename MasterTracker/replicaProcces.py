@@ -1,6 +1,7 @@
 from replicaUtilities import *
-
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 logging.basicConfig(filename='logs/MasterReplica.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+from Util import getMyIP
 
 def rcvTimOut(socket,timeNS):
     poller = zmq.Poller()

@@ -4,6 +4,10 @@ import time
 import multiprocessing as mp 
 import mysql.connector
 import copy
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 from Constants import portsDatanodeClient
 
@@ -19,7 +23,8 @@ def success(portsAvailable,rootIP, port):
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData"
+        database="lookUpData",
+        autocommit = True
     )
 
     dbcursour = mydb.cursor()
@@ -34,7 +39,7 @@ def success(portsAvailable,rootIP, port):
     socket.bind ("tcp://%s:%s" % (rootIP, port))
     [socket.setsockopt_string(zmq.SUBSCRIBE, ID) for ID in IDs]
 
-    SQL = "SELECT IP FROM machines WHERE ID = %s"
+    SQL = "SELECT INET_NTOA(IP) FROM machines WHERE ID = %s"
     while True:
         ID, recvPort = socket.recv_string().split()
 
@@ -78,7 +83,7 @@ if __name__ == "__main__":
 
     dbcursour = mydb.cursor()
 
-    dbcursour.execute("select id,IP from machines")
+    dbcursour.execute("select id,INET_NTOA(IP) from machines")
     rows = dbcursour.fetchall()
     ID_IP =  {str(row[0]):str(row[1]) for row in rows}
 

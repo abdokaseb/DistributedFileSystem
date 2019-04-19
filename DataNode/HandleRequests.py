@@ -6,6 +6,7 @@ import mysql.connector
 import json
 import time
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import math
 from Constants import USERACTIONS as ACTIONS
