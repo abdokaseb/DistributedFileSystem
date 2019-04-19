@@ -1,14 +1,14 @@
 from Util import getMyIP
 
 ############################
-
+DIR = "./videos"
 CHUNK_SIZE = 500
 USERACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1, 'LS': 2}
 
-MASTER_FILESYSTEM_MACHINE_IP = '192.168.137.147'
+MASTER_FILESYSTEM_MACHINE_IP = '192.168.1.17'
 
 ############ DATABASE
-MASTER_DATABASE_MACHINE_IP = '192.168.137.147'
+MASTER_DATABASE_MACHINE_IP = '192.168.1.17'
 portsSlavesClient = ["5756", "5757", "5758"]
 portsdatabaseSlaves = ["8001", "8002", "8003", "8004", "8005", "8006"]
 DatabaseportToListenSlaves = "8101"
@@ -30,6 +30,11 @@ portsdatabaseClients = ["7001", "7002", "7003", "7004", "7005", "7006"]
 portsDatanodeClient = ["6001", "6002", "6003", "6004", "6005", "6006", "6007"]
 portsDatanodeDatanode = ["6101", "6102","6103", "6104", "6105", "6106", "6107"]
 defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
+
+AliveMastertrackerFile = "./logs/aliveMastertraker.log"
+DataNodeReplicaFile = "./logs/DataNodeReplica.log"
+MasterReplicaFile = "./logs/MasterReplica.log"
+DataNodeHandleRequessFile = "./logs/DataNodeHandleRequess.log"
 
 
 

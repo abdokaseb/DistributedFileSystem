@@ -13,7 +13,7 @@ logging.basicConfig(filename='logs/Client.log', filemode='w', format='%(name)s -
 #logging.info("asdasdasdasd")
 sys.path.insert(0,"../MasterTracker/")
 
-from Util import getMyIP
+from Util import getMyIP,setLoggingFile
 
  
 def userInput(socket):
@@ -319,7 +319,7 @@ def SignUp(socket,Port,userName,Email,Password):
 
 
 if __name__ == "__main__":
-
+    setLoggingFile("Client.log")
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     for port in masterClientPorts:

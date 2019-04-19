@@ -5,15 +5,14 @@ import threading
 import mysql.connector
 import copy
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
-from constants import portsSlavesClient, N_DATABASE_SLAVES
+from Constants import portsSlavesClient, N_DATABASE_SLAVES
+from Util import getMyIP,getLogger
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+machineIP = getMyIP()
 
 def checkLive(portsAvailable,timeStam):
     staticTimeStamp = {}
@@ -28,12 +27,14 @@ def checkLive(portsAvailable,timeStam):
                     s[1] += 1
                     if s[1] > 2 and Alive[recvIP] != 0:
                         Alive[recvIP] = 0
+                        getLogger().info("Database Slaves with IP={} dead".format(recvIP))
                         print("Database Slaves with IP={} dead".format(recvIP))
                         portsAvailable[recvIP] = []
                         
                         
                 else:
                     if Alive[recvIP] == 0:
+                        getLogger().info("Database Slaves with and IP={} is alive".format(recvIP))
                         print("Database Slaves with and IP={} is alive".format(recvIP))
                         Alive[recvIP] = 1
                         portsAvailable[recvIP] = portsSlavesClient
@@ -59,6 +60,7 @@ def recevHeartBeat(portsAvailable,rootIP, port):
 
     while True:
         topic, recvIP = socket.recv_string().split()
+        getLogger().info("alive from IP={}".format(recvIP))
         try:
             timeStam[recvIP] += 1
         except:

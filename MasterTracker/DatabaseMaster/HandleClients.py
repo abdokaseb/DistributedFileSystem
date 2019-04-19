@@ -5,15 +5,17 @@ import multiprocessing as mp
 import mysql.connector
 import json
 import os 
+
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient
-
+from Util import getLogger,getMyIP
 
 
 
 def communicate(port,qSQLs):
+    getLogger().info("Port {} is lisening for clients".format(port))
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -25,18 +27,22 @@ def communicate(port,qSQLs):
 
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:%s" % port)
+    socket.bind("tcp://%s:%s" % (getMyIP(),port))
 
     while True:
         userName,Email,Password = socket.recv_string().split(' ')
         try:
-            retriveSql="INSERT INTO Users (UserName, Email, Pass) VALUES ({},{},{});".format(userName,Email,Password)
+            getLogger().info("Port {}, client need to signup, username={} email={} password={}".format(port,userName,Email,Password))
+            retriveSql="INSERT INTO Users (UserName, Email, Pass) VALUES ('{}','{}','{}');".format(userName,Email,Password)
             dbcursour.execute(retriveSql)
             qSQLs.put(retriveSql)
-            retriveSql="Select UserID from Users where UserName={} and Email={} and Pass={}".format(userName,Email,Password)
+            retriveSql="Select UserID from Users where UserName='{}' and Email='{}' and Pass='{}'".format(userName,Email,Password)
             dbcursour.execute(retriveSql)            
-            socket.send_string("{}".format(dbcursour.fetchone()[0]))
+            socket.send_string("{}".format(dbcursour.fetchall()[0][0]))
+            getLogger().info("inserted into databse, and send to slaves")
+            
         except:
+            getLogger().info("Port {}, client need to signup but can't signup, username={} email={} password={}".format(port,userName,Email,Password))
             socket.send_string("-2")
 
 if __name__ == '__main__':

@@ -1,11 +1,9 @@
-import sys,zmq,time,mysql.connector
-import copy,json,random ,logging,multiprocessing as mp 
+import sys,zmq,time,mysql.connector,os
+import copy,json,random ,multiprocessing as mp 
 sys.path.append("./")
 from Util import getMyIP
 from Constants import MIN_REPLICA_COUNT,defaultAvaliableRepiclaPortsDataNodeDataNode
-import os
 # INET_NTOA IPuintToStr 
-#logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 db = mysql.connector.connect(
@@ -46,7 +44,7 @@ def removeReplication(fakeUserID,fakeMachId,fileName):
 def getMachinesCount():
     dbcursour = db.cursor()
     dbcursour.execute("select count(distinct(ID)) from machines")
-    return dbcursour.fetchall()
+    return dbcursour.fetchall()[0][0]
     
 
 def getFilesToReplicate():

@@ -55,7 +55,7 @@ def recevHeartBeat(port = "5556"):
     # Socket to talk to server
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
-    socket.bind ("tcp://*:%s" % port)
+    # socket.bind ("tcp://:%s" % port)
     [socket.setsockopt_string(zmq.SUBSCRIBE, topic) for topic in topics]
 
 

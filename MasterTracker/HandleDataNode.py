@@ -5,17 +5,12 @@ import multiprocessing as mp
 import mysql.connector
 import copy
 import os
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
 from Constants import portsDatanodeClient
+from Util import getMyIP
 
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+machineIP = getMyIP()
 
 
 def success(portsAvailable,rootIP, port):

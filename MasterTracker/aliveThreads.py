@@ -4,16 +4,13 @@ import time
 import threading 
 import mysql.connector
 import copy
-
+import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Constants import portsDatanodeClient
+from Util import getMyIP,getLogger
 
 
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
-machineIP = getMachineIP()
+machineIP = getMyIP()
 
 def checkLive(portsAvailable,timeStam,topics):
     mydb = mysql.connector.connect(
@@ -45,13 +42,14 @@ def checkLive(portsAvailable,timeStam,topics):
                     Alive[int(key)] = 0
                     dbcursour.execute(dieSQL,(key,))
                     # mydb.commit()
-
+                    getLogger().info("machine with ID={} and IP={} dead".format(key,recvIP))
                     print("machine with ID={} and IP={} dead".format(key,recvIP))
                     portsAvailable[recvIP] = []
                     
                     
             else:
                 if Alive[int(key)] == 0:
+                    getLogger().info("machine with ID={} and IP={} is alive".format(key,recvIP))
                     print("machine with ID={} and IP={} is alive".format(key,recvIP))
                     Alive[int(key)] = 1
                     dbcursour.execute(lifeSQL,(recvIP,key))
@@ -78,6 +76,7 @@ def recevHeartBeat(portsAvailable,rootIP, port,IDs):
 
     while True:
         topic, recvIP = socket.recv_string().split()
+        getLogger().info("alive from IP={}".format(recvIP))
         timeStam[topic][0] += 1
         timeStam[topic][1] = recvIP
 

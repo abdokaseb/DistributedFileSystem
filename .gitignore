@@ -1,7 +1,9 @@
 MasterTracker/__pycache__/*
 MasterTracker/DatabaseMaster/__pycache__/*
-MasterTracker/__pycache__/*
 DataNode/__pycache__/*
+Client/__pycache__/*
+*.pyc
+logs/*
 os.txt
 node_1/
 node_2/
@@ -11,5 +13,7 @@ DataNode/*.pyc
 logs/*.pyc
 MasterTracker/*.pyc
 DataNode/DatabaseSlave/__pycache__/*
-DataNode/__pycache__/*
 __pycache__/*
+logs/*
+Client/__pycache__/AccessFS.cpython-36.pyc
+RunMachinesRamy.py

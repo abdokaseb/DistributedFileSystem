@@ -13,20 +13,19 @@ from aliveDatabaseSlave import sendHeartBeat
 from HandleClients import communicate as CComm
 from HandleMaster import communicate as MCom
 from Constants import portsDatanodeClient, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP
+from Util import getMyIP,setLoggingFile
 
-
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
 
 
 if __name__ == "__main__":
-    machineIP = getMachineIP()
+    setLoggingFile("DatabaseSlave.log")
+    machineIP = getMyIP()
+    print(machineIP)
     machineID = 2
     #rootIP = "127.0.0.1"
 
     aliveProcess = mp.Process(target=sendHeartBeat, args=(
-        1, MASTER_DATABASE_MACHINE_IP, DatabaseportToListenSlaves))
+        1, MASTER_DATABASE_MACHINE_IP, DatabaseportToListenSlaves,machineIP))
     aliveProcess.start()
 
     masterProcess = mp.Process(target=MCom, args=(

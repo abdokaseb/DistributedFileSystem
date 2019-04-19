@@ -1,6 +1,7 @@
 import sys
 import zmq
 import time
+import os
 import multiprocessing as mp 
 import mysql.connector
 
@@ -12,13 +13,10 @@ from replicaProcces import replicate as replicateFunc
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess
+from Util import getMyIP,getLogger,setLoggingFile
 
 
 
-
-def getMachineIP():
-    import socket
-    return socket.gethostbyname(socket.gethostname())
 
 def test(portsAvailable):
     print("start Test")
@@ -42,7 +40,8 @@ def readMachinesIDs():
     return  [str(id[0]) for id in idsRows]
 
 if __name__ == "__main__":
-    machineIP = getMachineIP()
+    setLoggingFile("MasterTracker.log")
+    machineIP = getMyIP()
     print(machineIP)
     machinesIDs = readMachinesIDs()
 
@@ -58,7 +57,8 @@ if __name__ == "__main__":
         machineIP, masterPortUploadSucess))
     successProcess.start()
 
-    replicaProcess = mp.Process(target=replicateFunc)
+    portsAvailabeDatanode = manager.dict()
+    replicaProcess = mp.Process(target=replicateFunc,args=(portsAvailabeDatanode,))
     replicaProcess.start()
 
     clientsProcesses = mp.Pool(len(masterClientPorts))

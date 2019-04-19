@@ -1,5 +1,6 @@
 import sys 
 import os
+from Util import setLoggingFile
 try:
     typeRun = sys.argv[1]
     if typeRun == 'Client':
