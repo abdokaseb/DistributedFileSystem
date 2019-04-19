@@ -9,7 +9,7 @@ sys.path.insert(0,"../Client/")
 sys.path.insert(0,"../MsterTracker/")
 from HandleRequests import uploadFile as uploadDst
 from AccessFS import Upload as uploadSrc
-from replicaUtilities import getMyIP
+from Util import getMyIP
 
 
 def handleReplica(port):

@@ -5,8 +5,10 @@ import multiprocessing as mp
 import mysql.connector
 import json
 
+from Constants import portsDatanodeClient, USERACTIONS
 
-USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
+
+#USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
 
 def communicate(portsAvailable,port):
     mydb = mysql.connector.connect(
@@ -90,7 +92,6 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
 
 if __name__ == '__main__':
     portsMasterClient = ["5556"]
-    portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
 
     mydb = mysql.connector.connect(
         host="localhost",

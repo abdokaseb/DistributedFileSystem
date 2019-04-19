@@ -8,6 +8,10 @@ from aliveThreads import recevHeartBeat
 from HandleDataNode import uploadSucess as DNSuccess
 from HandleClients import communicate as CComm
 
+from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess
+
+
+
 
 def getMachineIP():
     import socket
@@ -36,25 +40,21 @@ def readMachinesIDs():
 if __name__ == "__main__":
     machineIP = getMachineIP()
     print(machineIP)
-    heartPort = "5556"
-    portUploadSucess = "7001"
-    portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
-    portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
-    #portsDataNodeDataNode = ["9001","9002","9003","9004","9009","9006"]
     machinesIDs = readMachinesIDs()
 
     portsAvailable = mp.Manager().dict()
     testProcess = mp.Process(target=test,args=(portsAvailable,))
     testProcess.start()
 
-    aliveProcess = mp.Process(target=recevHeartBeat,args=(portsAvailable,machineIP,heartPort,machinesIDs))
+    aliveProcess = mp.Process(target=recevHeartBeat,args=(portsAvailable,machineIP,masterHeartPort,machinesIDs))
     aliveProcess.start()
 
-    successProcess = mp.Process(target=DNSuccess,args=(machineIP,portUploadSucess))
+    successProcess = mp.Process(target=DNSuccess, args=(
+        machineIP, masterPortUploadSucess))
     successProcess.start()
 
-    clientsProcesses = mp.Pool(len(portsMasterClient))
-    clientsProcesses.starmap(CComm,[(portsAvailable,port) for port in portsMasterClient])
+    clientsProcesses = mp.Pool(len(masterClientPorts))
+    clientsProcesses.starmap(CComm,[(portsAvailable,port) for port in masterClientPorts])
 
 
     aliveProcess.join()
