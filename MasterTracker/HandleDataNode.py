@@ -5,6 +5,8 @@ import multiprocessing as mp
 import mysql.connector
 import copy
 import os
+import logging
+logging.basicConfig(level="INFO",filename='logs/MasterTrakerHandleDataNode.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

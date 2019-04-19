@@ -5,6 +5,9 @@ import multiprocessing as mp
 import mysql.connector
 import random
 import os
+import logging
+logging.basicConfig(level="INFO",filename='logs/MasDBDNSforDatabase.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
@@ -12,16 +15,16 @@ from Constants import portsDatanodeClient
 
 
 def communicate(portsAvailable,port):
+    # logging.info("Port {} start to listen to clients".format(port))
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://*:%s" % port)
     while True:
         for slaveIP in portsAvailable.keys():
             m = socket.recv_string()
-            print(m)
-
             portIndex = random.randint(0,len(portsAvailable[slaveIP])-1)
             socket.send_string('{}:{}'.format(slaveIP,portsAvailable[slaveIP][portIndex]))
+            # logging.info("Port {} replied with IP:Port number {}:{}".format(port,portsAvailable[slaveIP][portIndex]))
 
         
 

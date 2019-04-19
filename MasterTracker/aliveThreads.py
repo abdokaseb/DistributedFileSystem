@@ -5,9 +5,9 @@ import threading
 import mysql.connector
 import copy
 import os
-
+import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+logging.basicConfig(level="INFO",filename='logs/aliveMastertraker.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 from Constants import portsDatanodeClient
 
 
@@ -46,13 +46,14 @@ def checkLive(portsAvailable,timeStam,topics):
                     Alive[int(key)] = 0
                     dbcursour.execute(dieSQL,(key,))
                     # mydb.commit()
-
+                    logging.info("machine with ID={} and IP={} dead".format(key,recvIP))
                     print("machine with ID={} and IP={} dead".format(key,recvIP))
                     portsAvailable[recvIP] = []
                     
                     
             else:
                 if Alive[int(key)] == 0:
+                    logging.info("machine with ID={} and IP={} is alive".format(key,recvIP))
                     print("machine with ID={} and IP={} is alive".format(key,recvIP))
                     Alive[int(key)] = 1
                     dbcursour.execute(lifeSQL,(recvIP,key))
@@ -79,6 +80,7 @@ def recevHeartBeat(portsAvailable,rootIP, port,IDs):
 
     while True:
         topic, recvIP = socket.recv_string().split()
+        logging.info("alive from IP={}".format(recvIP))
         timeStam[topic][0] += 1
         timeStam[topic][1] = recvIP
 
