@@ -1,7 +1,7 @@
 from Util import getMyIP
 
 ############################
-
+DIR = "./videos"
 CHUNK_SIZE = 500
 USERACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1, 'LS': 2}
 

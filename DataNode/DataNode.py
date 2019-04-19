@@ -10,7 +10,7 @@ from alive import sendHeartBeat
 from AccessFS import Upload as uploadSrc
 from Util import getMyIP
 
-from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP,defaultAvaliableRepiclaPortsDataNodeDataNode
+from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP,defaultAvaliableRepiclaPortsDataNodeDataNode,DIR
 logging.basicConfig(filename='logs/DataNodeReplic.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 
@@ -72,20 +72,19 @@ class NoDaemonPool(multiprocessing.pool.Pool):
         super(NoDaemonPool, self).__init__(*args, **kwargs)
 
 
-def Test():
-    import wmi
-    c = wmi.WMI()
+# def Test():
+#     import wmi
+#     c = wmi.WMI()
 
-    while True :
-        for process in c.Win32_Process():
-            print (process.ProcessId, process.Name)
-        time.sleep(10)
+#     while True :
+#         for process in c.Win32_Process():
+#             print (process.ProcessId, process.Name)
+#         time.sleep(10)
 
 if __name__ == "__main__":
 
     machineID = int(sys.argv[1])
 
-    DIR = sys.argv[2]
 
     #### for client and master
     mainProcesses = NoDaemonPool(len(portsDatanodeClient))
@@ -93,8 +92,8 @@ if __name__ == "__main__":
     
 
     ############
-    testProcess = mp.Process(target=Test)
-    testProcess.start()
+    #testProcess = mp.Process(target=Test)
+    #testProcess.start()
     ############
 
 

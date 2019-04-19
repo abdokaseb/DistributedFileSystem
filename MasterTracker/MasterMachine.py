@@ -59,7 +59,7 @@ if __name__ == "__main__":
         machineIP, masterPortUploadSucess))
     successProcess.start()
 
-    replicaProcess = mp.Process(target=replicateFunc)
+    replicaProcess = mp.Process(target=replicateFunc,args=(manager.dict(),))
     replicaProcess.start()
 
     clientsProcesses = mp.Pool(len(masterClientPorts))
