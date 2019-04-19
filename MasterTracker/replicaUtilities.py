@@ -4,7 +4,6 @@ sys.path.append("./")
 from Util import getMyIP
 from Constants import MIN_REPLICA_COUNT,defaultAvaliableRepiclaPortsDataNodeDataNode
 # INET_NTOA IPuintToStr 
-#logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 db = mysql.connector.connect(

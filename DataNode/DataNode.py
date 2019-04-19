@@ -11,7 +11,9 @@ from AccessFS import Upload as uploadSrc
 from Util import getMyIP
 
 from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP,defaultAvaliableRepiclaPortsDataNodeDataNode,DIR
-logging.basicConfig(filename='logs/DataNodeReplic.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
+
+def log(fileName,msg):
+    logging.basicConfig(filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
 
 
 machineID=1

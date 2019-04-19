@@ -7,7 +7,7 @@ import copy
 import os
 import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-logging.basicConfig(level="INFO",filename='logs/aliveMastertraker.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level="INFO",filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 from Constants import portsDatanodeClient
 from Util import getMyIP
 

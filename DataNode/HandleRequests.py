@@ -8,13 +8,14 @@ import time
 import os
 import logging
 
-logging.basicConfig(filename='logs/DataNodeHandleRequess.log',
+logging.basicConfig(filename='logs/os.log',
                     filemode='w', format='%(name)s - %(levelname)s - %(message)s', level="INFO")
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import math
 from Constants import USERACTIONS as ACTIONS
+from Util import getMyIP
 
 
 def communicate(port, DIR):
@@ -23,7 +24,7 @@ def communicate(port, DIR):
 
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:%s" % port)
+    socket.bind("tcp://%s:%s" % (getMyIP(),port))
     while True:
         #  Wait for next request from client
         message = socket.recv_string().split()

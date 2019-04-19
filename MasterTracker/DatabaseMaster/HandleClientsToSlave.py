@@ -6,7 +6,7 @@ import mysql.connector
 import random
 import os
 import logging
-logging.basicConfig(level="INFO",filename='logs/MasDBDNSforDatabase.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level="INFO",filename='logs/os.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))

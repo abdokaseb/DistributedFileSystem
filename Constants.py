@@ -31,6 +31,11 @@ portsDatanodeClient = ["6001", "6002", "6003", "6004", "6005", "6006", "6007"]
 portsDatanodeDatanode = ["6101", "6102","6103", "6104", "6105", "6106", "6107"]
 defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
 
+AliveMastertrackerFile = "./logs/aliveMastertraker.log"
+DataNodeReplicaFile = "./logs/DataNodeReplica.log"
+MasterReplicaFile = "./logs/MasterReplica.log"
+DataNodeHandleRequessFile = "./logs/DataNodeHandleRequess.log"
+
 
 
 clientUploadIpPort = (getMyIP(), "7005")
