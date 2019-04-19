@@ -107,6 +107,6 @@ if __name__ == "__main__":
     aliveProcesses.start()
     ###############################
     mainProcesses.close()
-    replicaProcesses.close()
     mainProcesses.join()
-    replicaProcesses.join()
+    handleReplicaProcesses.close()
+    handleReplicaProcesses.join()

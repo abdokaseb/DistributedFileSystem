@@ -56,7 +56,8 @@ if __name__ == "__main__":
         machineIP, masterPortUploadSucess))
     successProcess.start()
 
-    replicaProcess = mp.Process(target=replicateFunc,args=(manager.dict(),))
+    portsAvailabeDatanode = manager.dict()
+    replicaProcess = mp.Process(target=replicateFunc,args=(portsAvailabeDatanode,))
     replicaProcess.start()
 
     clientsProcesses = mp.Pool(len(masterClientPorts))

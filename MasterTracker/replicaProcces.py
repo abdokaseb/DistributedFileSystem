@@ -78,7 +78,7 @@ def replicate(availReplicaPorts):
         fillAvailReplicaPorts(availReplicaPorts)
         #print(availReplicaPorts)
         filesToReplicate = getFilesToReplicate()
-        logging.info("Files to replicate",filesToReplicate)
+        logging.info("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
                 srcMach,dstMach = getSrcDstMach(fileName,availReplicaPorts)

@@ -45,7 +45,7 @@ def removeReplication(fakeUserID,fakeMachId,fileName):
 def getMachinesCount():
     dbcursour = db.cursor()
     dbcursour.execute("select count(distinct(ID)) from machines")
-    return dbcursour.fetchall()
+    return dbcursour.fetchall()[0][0]
     
 
 def getFilesToReplicate():
