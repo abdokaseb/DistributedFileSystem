@@ -1,5 +1,0 @@
-C:/Users/ramym/Anaconda3/python.exe c:/Users/ramym/Desktop/SecondTerm/Os/project/DistributedFileSystem/Client/AccessFS.py
-
-
-
-C:/Users/ramym/Anaconda3/python.exe c:/Users/ramym/Desktop/SecondTerm/Os/project/DistributedFileSystem/DataNode/DataNode.py

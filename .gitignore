@@ -6,3 +6,8 @@ os.txt
 node_1/
 node_2/
 .history/
+Client/*.pyc
+DataNode/*.pyc
+logs/*.pyc
+MasterTracker/*.pyc
+
