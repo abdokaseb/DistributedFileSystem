@@ -4,9 +4,13 @@ import json
 import multiprocessing as mp
 import time
 import sys
+import os
 sys.path.insert(0,"../DataNode/")
 sys.path.insert(0,"../Client/")
 sys.path.insert(0,"../MsterTracker/")
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from HandleRequests import uploadFile as uploadDst
 from AccessFS import Upload as uploadSrc
 from Util import getMyIP

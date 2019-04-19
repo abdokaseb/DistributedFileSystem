@@ -1,9 +1,13 @@
 import sys
 import zmq
 import time
+import os 
 import multiprocessing as mp
 import multiprocessing.pool
 import mysql.connector
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 from HandleRequests import communicate
 from handleReplica import handleReplica as hp

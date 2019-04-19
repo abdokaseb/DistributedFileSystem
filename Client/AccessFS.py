@@ -7,6 +7,8 @@ import threading as th
 import random
 sys.path.insert(0,"../MasterTracker/")
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from Util import getMyIP
 
 from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MASTER_DATABASE_MACHINE_IP, clientDownloadPorts, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts

@@ -8,6 +8,8 @@ from aliveThreads import recevHeartBeat
 from HandleDataNode import uploadSucess as DNSuccess
 from HandleClients import communicate as CComm
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess
 
 

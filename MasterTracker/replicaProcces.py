@@ -1,4 +1,7 @@
 from replicaUtilities import *
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from Util import getMyIP
 
 def rcvTimOut(socket,timeNS):

@@ -3,6 +3,7 @@ import multiprocessing as mp ,copy,json,random ,logging
 
 # INET_NTOA IPuintToStr 
 #logging.basicConfig(filename='../logs/replicaLog.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from constants import MIN_REPLICA_COUNT
 

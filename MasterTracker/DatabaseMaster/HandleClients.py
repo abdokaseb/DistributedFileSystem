@@ -4,6 +4,9 @@ import sys
 import multiprocessing as mp
 import mysql.connector
 import json
+import os 
+sys.path.append(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient
 
