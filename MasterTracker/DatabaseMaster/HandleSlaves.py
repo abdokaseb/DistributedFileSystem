@@ -13,7 +13,7 @@ from Constants import portsDatanodeClient
 from Util import getLogger,getMyIP
 
 def SendSlave(port,qSQLs):
-    getLogger().info("Port {} start to listen to slaves".format(port))
+    getLogger().info("Port {} start to sending to slaves".format(port))
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.bind("tcp://%s:%s" % (getMyIP(),port))

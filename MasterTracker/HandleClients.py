@@ -41,7 +41,7 @@ def communicate(portsAvailable,port):
         elif int(message[1]) == USERACTIONS['DOWNLOAD']:
             result = downloadFile(message[0],message[2],dbcursour,portsAvailable)
             socket.send_json(result)
-        getLogger().info("Port {} replied to client with id={}".format(port,message[0]))
+        getLogger().info("Port {} replied to client with id={} with result = {}".format(port,message[0],result))
         
 
 def listFiles(userID,dbcursour):
@@ -65,6 +65,7 @@ def uploadFile(portsAvailable):
     return '{}:{}'.format(machIP,port)
 
 def downloadFile(userID,filename,dbcursour,portsAvailable):
+    print(userID,filename)
     SQL = "SELECT INET_NTOA(IP) FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
     machIPsRows = dbcursour.fetchall()
@@ -72,6 +73,7 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
     listConnections = []
     for machIPRow in machIPsRows:
         machIP = str(machIPRow[0])
+        print(machIP)
         ports = portsAvailable[machIP]
         random.shuffle(ports)
         for port in ports:

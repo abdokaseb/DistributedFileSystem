@@ -48,7 +48,7 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
 def getSrcDstMach(fileName,availReplicaPorts):
     dbcursour = db.cursor()
     srcMachQuery = "select ID,INET_NTOA(IP),UserID from machines,files where isAlive = 1 and machID = ID and fileName ='{}'".format(fileName)
-    dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where fileName !='{}' OR fileName IS NULL".format(fileName)
+    dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where m.isAlive = 1 and (fileName !='{}' OR fileName IS NULL)".format(fileName)
     dbcursour.execute(srcMachQuery)
     srcMachines =  dbcursour.fetchall() 
     dbcursour.execute(dstMachQuery)
@@ -63,7 +63,7 @@ def getSrcDstMach(fileName,availReplicaPorts):
             return None
 
     for machId,machIP in dstMachines:
-        if(len(availReplicaPorts[machId])>0):
+        if(len(availReplicaPorts[machId])>0 and machId != srcMachine[0]):
             dstMachine = machId, machIP, availReplicaPorts[machId][0]
             a , b = availReplicaPorts[machId],availReplicaPorts[srcMachine[0]]
             a.pop(0) ; b.pop(0)

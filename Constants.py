@@ -38,4 +38,4 @@ DataNodeHandleRequessFile = "./logs/DataNodeHandleRequess.log"
 
 
 
-clientUploadIpPort = (getMyIP(), "7005")
+clientUploadIpPort = (getMyIP(), "7225")
