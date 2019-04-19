@@ -25,7 +25,7 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS machines (ID Int, isAlive Int, IP I
 mycursor.execute("CREATE TABLE IF NOT EXISTS files (UserID Int, machID Int, fileName VARCHAR(255))")
 
 # sql = ''
-mainSQL = "INSERT INTO machines (ID,IP, isAlive) VALUES (%s,%s, %s);"
+mainSQL = "INSERT INTO machines (ID,INET_ATON(IP), isAlive) VALUES (%s,%s, %s);"
 
 for i in range(10):
   # sql += mainSQL.format(i)

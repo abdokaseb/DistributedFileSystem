@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     dbcursour = mydb.cursor()
 
-    dbcursour.execute("select IP from machines")
+    dbcursour.execute("select INET_NTOA(IP) from machines")
     IPsRow = dbcursour.fetchall()
     IPsM =  [str(IP[0]) for IP in IPsRow]
 

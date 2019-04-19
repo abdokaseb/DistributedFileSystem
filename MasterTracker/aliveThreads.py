@@ -23,7 +23,7 @@ def checkLive(portsAvailable,timeStam,topics):
     dbcursour.execute("UPDATE machines SET isAlive = 0")
     mydb.commit()
     dieSQL = "UPDATE machines SET isAlive = 0 WHERE id = %s "
-    lifeSQL = "UPDATE machines SET isAlive = 1, IP=%s WHERE id = %s "
+    lifeSQL = "UPDATE machines SET isAlive = 1, IP = INET_ATON(%s) WHERE id = %s "
 
     staticTimeStamp = {}
     Alive = [0]*(len(topics)+1)

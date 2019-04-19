@@ -7,7 +7,7 @@ import mysql.connector
 from aliveThreads import recevHeartBeat
 from HandleDataNode import uploadSucess as DNSuccess
 from HandleClients import communicate as CComm
-
+from replicaProcces import replicate as replicateFunc
 
 def getMachineIP():
     import socket
@@ -40,10 +40,12 @@ if __name__ == "__main__":
     portUploadSucess = "7001"
     portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
     portsMasterClient = ["5001","5002","5003","5004","5005","5006"]
-    #portsDataNodeDataNode = ["9001","9002","9003","9004","9009","9006"]
+    portsDataNodeDataNode = ["9001","9002","9003","9004","9009","9006"]
+
     machinesIDs = readMachinesIDs()
 
-    portsAvailable = mp.Manager().dict()
+    manager = mp.Manager()
+    portsAvailable = manager.dict()
     testProcess = mp.Process(target=test,args=(portsAvailable,))
     testProcess.start()
 
@@ -54,9 +56,13 @@ if __name__ == "__main__":
     successProcess.start()
 
     clientsProcesses = mp.Pool(len(portsMasterClient))
-    clientsProcesses.starmap(CComm,[(portsAvailable,port) for port in portsMasterClient])
+    clientsProcesses.starmap_async(CComm,[(portsAvailable,port) for port in portsMasterClient])
+
+    replicaProcess = mp.Process(target=replicateFunc)
+    replicaProcess.start()
 
 
     aliveProcess.join()
     successProcess.join()
     clientsProcesses.join()
+    replicaProcess.join()
