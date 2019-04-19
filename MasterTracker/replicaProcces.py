@@ -1,4 +1,5 @@
 from replicaUtilities import *
+from Util import getMyIP
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Util import getMyIP,getLogger
@@ -17,7 +18,7 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
     context = zmq.Context()
     socketSrc,socketDst = context.socket(zmq.REQ),context.socket(zmq.REQ)
     confirmSocket = context.socket(zmq.REP)
-    availPort = confirmSocket.bind_to_random_port("tcp://*",min_port = 1500,max_port = 4000,max_tries = 50)
+    availPort = confirmSocket.bind_to_random_port("tcp://"+getMyIP(),min_port = 1500,max_port = 4000,max_tries = 50)
     try:
         socketSrc.connect("tcp://%s:%s" % (srcMach[1],srcMach[2]))
         socketDst.connect("tcp://%s:%s" % (dstMach[1],dstMach[2]))

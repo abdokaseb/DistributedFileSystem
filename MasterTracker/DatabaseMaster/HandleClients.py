@@ -10,8 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient
-from Util import getLogger
-
+from Util import getLogger,getMyIP
 
 
 
@@ -28,7 +27,7 @@ def communicate(port,qSQLs):
 
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:%s" % port)
+    socket.bind("tcp://%s:%s" % (getMyIP(),port))
 
     while True:
         userName,Email,Password = socket.recv_string().split(' ')

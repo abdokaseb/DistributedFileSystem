@@ -13,7 +13,6 @@ import math
 from Constants import USERACTIONS as ACTIONS
 from Util import getMyIP,getLogger
 
-
 def communicate(port, DIR):
 
     print("inside process "+port)

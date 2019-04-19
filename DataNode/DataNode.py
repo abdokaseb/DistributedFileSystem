@@ -19,7 +19,7 @@ def handleReplica(port):
     while True:
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:%s" % port)
+        socket.bind("tcp://%s:%s" % (getMyIP(),port))
         getLogger().info("A Replica Process alive with ports" + str(port))
         if(socket.recv_string()=="READY"):
             socket.send_string("YES")

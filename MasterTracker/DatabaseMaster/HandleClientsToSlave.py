@@ -10,13 +10,13 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient
-
+from Util import getMyIP
 
 def communicate(portsAvailable,port):
     # logging.info("Port {} start to listen to clients".format(port))
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:%s" % port)
+    socket.bind("tcp://%s:%s" % (getMyIP(),port))
     while True:
         for slaveIP in portsAvailable.keys():
             m = socket.recv_string()
