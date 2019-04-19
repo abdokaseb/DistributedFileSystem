@@ -7,11 +7,11 @@ import mysql.connector
 
 from HandleRequests import communicate
 from handleReplica import handleReplica as hp
+from alive import sendHeartBeat
 
+from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPort, MASTER_FILESYSTEM_MACHINE_IP
 
-
-portsDatanodeClient = ["6001", "6002", "6003", "6004","6005","6006","6007"]
-portsDatanodeDatanode = ["6101", "6102","6103", "6104", "6105", "6106", "6107"]
+machineID=1
 
 
 class NoDaemonProcess(multiprocessing.Process):
@@ -45,19 +45,30 @@ def Test():
 
 if __name__ == "__main__":
 
+    machineID = int(sys.argv[1])
+
+    DIR = sys.argv[2]
+
     #### for client and master
     mainProcesses = NoDaemonPool(len(portsDatanodeClient))
-    mainProcesses.map_async(communicate, portsDatanodeClient)
+    mainProcesses.starmap_async(communicate, [(port, DIR) for port in portsDatanodeClient])
     
 
+    ############
     testProcess = mp.Process(target=Test)
     testProcess.start()
+    ############
 
 
     #### replica processes
     replicaProcesses = mp.Pool(len(portsDatanodeDatanode))
     replicaProcesses.map_async(hp, portsDatanodeDatanode)
 
+    ################ alive process 
+
+    aliveProcesses = mp.Process(target=sendHeartBeat, args=(
+        machineID, MASTER_FILESYSTEM_MACHINE_IP, masterHeartPort))
+    aliveProcesses.start()
     ###############################
     mainProcesses.close()
     replicaProcesses.close()

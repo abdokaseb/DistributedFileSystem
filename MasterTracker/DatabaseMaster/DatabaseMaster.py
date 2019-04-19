@@ -8,6 +8,7 @@ from HandleClients import communicate
 from distributor import distributorF
 from trackSlaves import recevHeartBeat as HBSlaves
 from HandleClientsToSlave import communicate as CScomm
+from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves
 
 def getMachineIP():
     import socket
@@ -20,10 +21,6 @@ def test(portsAvailable):
         time.sleep(1)
 
 if __name__ == "__main__":
-    portsdatabaseClients = ["7001","7002","7003","7004","7005","7006"]
-    portsdatabaseSlaves = ["8001","8002","8003","8004","8005","8006"]
-    portToListenSlaves = "8101"
-    portsHandleClentsToSlaves = ["8201","8202","8203","8204","8205","8206"]
 
     machineIP = getMachineIP()
     manager = mp.Manager()
@@ -35,7 +32,8 @@ if __name__ == "__main__":
     testProcess = mp.Process(target=test,args=(portsAvailableForSlaves,))
     testProcess.start()
 
-    trackSlaves = mp.Process(target=HBSlaves,args=(portsAvailableForSlaves,machineIP,portToListenSlaves))
+    trackSlaves = mp.Process(target=HBSlaves, args=(
+        portsAvailableForSlaves, machineIP, DatabaseportToListenSlaves))
     trackSlaves.start()
 
     clientsProcesses = mp.Pool(len(portsdatabaseClients))

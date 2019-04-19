@@ -5,6 +5,8 @@ import multiprocessing as mp
 import mysql.connector
 import copy
 
+from Constants import portsDatanodeClient
+
 
 def getMachineIP():
     import socket
@@ -68,7 +70,6 @@ def uploadSucess (rootIP, port):
 
 if __name__ == "__main__": 
     successPort = "7001"
-    portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",

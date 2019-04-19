@@ -4,6 +4,8 @@ import sys
 import multiprocessing as mp
 import mysql.connector
 import random
+from Constants import portsDatanodeClient
+
 
 def communicate(portsAvailable,port):
     context = zmq.Context()
@@ -23,7 +25,6 @@ def communicate(portsAvailable,port):
 
 if __name__ == '__main__':
     portsMasterClient = ["5556"]
-    portsDatanodeClient = ["6001","6002","6003","6004","6005","6006"]
 
     mydb = mysql.connector.connect(
         host="localhost",
