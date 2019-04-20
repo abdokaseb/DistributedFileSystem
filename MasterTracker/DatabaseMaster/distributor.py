@@ -16,7 +16,7 @@ from Util import getLogger
 
 
 def distributorF(qSQLs,ports):
-    getLogger().info("Distrupeter up")
+    getLogger().info("Distributer up")
     slavesProcesses = mp.Pool(len(ports))
     manager = mp.Manager()
     qs = [manager.Queue() for _ in range(len(ports))]
@@ -24,8 +24,8 @@ def distributorF(qSQLs,ports):
 
     while True:
         message = qSQLs.get()
-        getLogger().info("Distuputer send message {}".format(message))
         for q in qs: q.put(message)
+        getLogger().info("message :{} distributed".format(message))
 
         
 

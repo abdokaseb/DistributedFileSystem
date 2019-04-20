@@ -42,7 +42,8 @@ def readMachinesIDs():
 if __name__ == "__main__":
     setLoggingFile("MasterTracker.log")
     machineIP = getMyIP()
-    print(machineIP)
+    getLogger().info("Master Tracker started with machine IP = {}".format(machineIP))
+    # print(machineIP)
     machinesIDs = readMachinesIDs()
 
     manager = mp.Manager()
@@ -62,7 +63,7 @@ if __name__ == "__main__":
     replicaProcess.start()
 
     clientsProcesses = mp.Pool(len(masterClientPorts))
-    clientsProcesses.starmap_async(CComm,[(portsAvailable,port) for port in masterClientPorts])
+    clientsProcesses.starmap_async(CComm,[(portsAvailable,machineIP,port) for port in masterClientPorts])
 
 
     aliveProcess.join()

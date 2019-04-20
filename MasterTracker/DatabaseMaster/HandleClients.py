@@ -15,12 +15,12 @@ from Util import getLogger,getMyIP
 
 
 def communicate(port,qSQLs):
-    getLogger().info("Port {} is lisening for clients".format(port))
+    getLogger().info("Port {} is lisening for clients to add new users".format(port))
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
         passwd="",
-        database="lookUpData",
+        database="lookUpDataMaster",
         autocommit=True
     )
     dbcursour = mydb.cursor()    
@@ -33,16 +33,17 @@ def communicate(port,qSQLs):
         userName,Email,Password = socket.recv_string().split(' ')
         try:
             getLogger().info("Port {}, client need to signup, username={} email={} password={}".format(port,userName,Email,Password))
-            retriveSql="INSERT INTO Users (UserName, Email, Pass) VALUES ('{}','{}','{}');".format(userName,Email,Password)
-            dbcursour.execute(retriveSql)
-            qSQLs.put(retriveSql)
-            retriveSql="Select UserID from Users where UserName='{}' and Email='{}' and Pass='{}'".format(userName,Email,Password)
+            insertMasterSql="INSERT INTO Users (UserName, Email, Pass) VALUES ('{}','{}','{}');".format(userName,Email,Password)
+            dbcursour.execute(insertMasterSql)
+            retriveSql="SELECT UserID from Users where UserName='{}' and Email='{}' and Pass='{}'".format(userName,Email,Password)
             dbcursour.execute(retriveSql)            
-            socket.send_string("{}".format(dbcursour.fetchall()[0][0]))
-            getLogger().info("inserted into databse, and send to slaves")
-            
-        except:
-            getLogger().info("Port {}, client need to signup but can't signup, username={} email={} password={}".format(port,userName,Email,Password))
+            userID = dbcursour.fetchall()[0][0]
+            insertSlaveSql="INSERT INTO Users (UserID, UserName, Email, Pass) VALUES ('{}','{}','{}','{}');".format(userID,userName,Email,Password)
+            qSQLs.put(insertSlaveSql)
+            socket.send_string("{}".format(userID))
+            getLogger().info("inserted into user databse, and send to slaves UserID={}, UserName={}, Email={}, Pass={}".format(userID,userName,Email,Password))
+        except Exception as e:
+            getLogger().info("Port {}, client need to signup but can't signup, username={} email={} password={} error is {}".format(port,userName,Email,Password,e.message))
             socket.send_string("-2")
 
 if __name__ == '__main__':

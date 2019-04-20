@@ -80,13 +80,15 @@ class NoDaemonPool(multiprocessing.pool.Pool):
 #         time.sleep(10)
 
 if __name__ == "__main__":
-    setLoggingFile("DataNode.log")
     machineID = int(sys.argv[1])
+    setLoggingFile("DataNode{}.log".format(machineID))
+    machineIP = getMyIP()
+    getLogger().info("DataNode Started with machine IP {} machine ID {}".format(machineIP,machineID))
 
 
     #### for client and master
     mainProcesses = NoDaemonPool(len(portsDatanodeClient))
-    mainProcesses.starmap_async(communicate, [(port, DIR,machineID) for port in portsDatanodeClient])
+    mainProcesses.starmap_async(communicate, [(port, DIR, machineIP,machineID) for port in portsDatanodeClient])
     
 
     ############

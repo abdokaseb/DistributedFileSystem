@@ -42,15 +42,15 @@ def checkLive(portsAvailable,timeStam,topics):
                     Alive[int(key)] = 0
                     dbcursour.execute(dieSQL,(key,))
                     # mydb.commit()
-                    getLogger().info("machine with ID={} and IP={} dead".format(key,recvIP))
-                    print("machine with ID={} and IP={} dead".format(key,recvIP))
+                    getLogger().info("DataNode with ID={} and IP={} dead".format(key,recvIP))
+                    print("DataNode with ID={} and IP={} dead".format(key,recvIP))
                     portsAvailable[recvIP] = []
                     
                     
             else:
                 if Alive[int(key)] == 0:
-                    getLogger().info("machine with ID={} and IP={} is alive".format(key,recvIP))
-                    print("machine with ID={} and IP={} is alive".format(key,recvIP))
+                    getLogger().info("DataNode with ID={} and IP={} is alive".format(key,recvIP))
+                    print("DataNode with ID={} and IP={} is alive".format(key,recvIP))
                     Alive[int(key)] = 1
                     dbcursour.execute(lifeSQL,(recvIP,key))
                     # mydb.commit()
@@ -61,6 +61,7 @@ def checkLive(portsAvailable,timeStam,topics):
                 s[1] = 0
 
 def recevHeartBeat(portsAvailable,rootIP, port,IDs):
+    getLogger().info("Alive Process started to listen Datanodes on IP:Port {}:{}".format(rootIP,port))
     # Socket to talk to server
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
@@ -76,7 +77,7 @@ def recevHeartBeat(portsAvailable,rootIP, port,IDs):
 
     while True:
         topic, recvIP = socket.recv_string().split()
-        getLogger().info("alive from IP={}".format(recvIP))
+        # getLogger().info("alive from IP={}".format(recvIP))
         timeStam[topic][0] += 1
         timeStam[topic][1] = recvIP
 

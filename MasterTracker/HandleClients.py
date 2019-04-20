@@ -9,13 +9,13 @@ import random
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Constants import portsDatanodeClient, USERACTIONS
-from Util import getLogger,getMyIP
+from Util import getLogger
 
 
 #USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
 
-def communicate(portsAvailable,port):
-    getLogger().info("Start lisent to clients from port {}".format(port))
+def communicate(portsAvailable,rootIP,port):
+    getLogger().info("Start listen to clients at IP:Port {}:{}".format(rootIP,port))
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -27,21 +27,21 @@ def communicate(portsAvailable,port):
 
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://%s:%s" % (getMyIP(),port))
+    socket.bind("tcp://%s:%s" % (rootIP,port))
     while True:
         #  Wait for next request from client
         message = socket.recv_string().split()
-        getLogger().info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],message[1]))
+        getLogger().info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],USERACTIONS[int(message[1])]))
         if int(message[1]) == USERACTIONS['LS']:
             result = listFiles(message[0],dbcursour)
             socket.send_json(result)
         elif int(message[1]) == USERACTIONS['UPLOAD']:
-            result = uploadFile(portsAvailable)
+            result = uploadFile(message[0],message[2],dbcursour,portsAvailable)
             socket.send_string(result)
         elif int(message[1]) == USERACTIONS['DOWNLOAD']:
             result = downloadFile(message[0],message[2],dbcursour,portsAvailable)
             socket.send_json(result)
-        getLogger().info("Port {} replied to client with id={} with result = {}".format(port,message[0],result))
+        getLogger().info("Port {} replied to client with id={} for instunction {} with result = {}".format(port,message[0],USERACTIONS[int(message[1])],result))
         
 
 def listFiles(userID,dbcursour):
@@ -53,7 +53,13 @@ def listFiles(userID,dbcursour):
 #####################################################################################################
 
 ######### For Test the DataNode ###################### remove it
-def uploadFile(portsAvailable):
+def uploadFile(userID,filename,dbcursour,portsAvailable):
+    SQL = "SELECT userID FROM files WHERE userID = %s and filename = %s"
+    dbcursour.execute(SQL,(userID,filename))
+    _ = dbcursour.fetchall()
+    if (dbcursour.rowcount != 0):
+        return "You have file with the same name"
+
     machIPs = portsAvailable.keys()
     index = random.randint(0,len(machIPs)-1)
     machIP = machIPs[index]
@@ -69,7 +75,7 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
     SQL = "SELECT INET_NTOA(IP) FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
     machIPsRows = dbcursour.fetchall()
-    
+    random.shuffle(machIPsRows)
     listConnections = []
     for machIPRow in machIPsRows:
         machIP = str(machIPRow[0])

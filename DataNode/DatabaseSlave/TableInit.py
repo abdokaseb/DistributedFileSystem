@@ -9,14 +9,14 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE DATABASE IF NOT EXISTS lookUpDataMaster")
+mycursor.execute("CREATE DATABASE IF NOT EXISTS lookUpDataSlave")
 
 
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
   passwd="",
-  database="lookUpDataMaster",
+  database="lookUpDataSlave",
   autocommit=True
 )
 

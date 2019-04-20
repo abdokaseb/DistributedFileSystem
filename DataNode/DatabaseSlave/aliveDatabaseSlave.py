@@ -3,10 +3,10 @@ import random
 import sys
 import time
 
-
+from Util import getLogger
 
 def sendHeartBeat(machineID,rootIP = "127.0.0.1",port = "5556",machineIP=''):
-    
+    getLogger().info("Start to send heart beat, connecting to IP:Port {}:{}".format(rootIP,port))
     topic = machineID
 
     context = zmq.Context()
@@ -18,6 +18,8 @@ def sendHeartBeat(machineID,rootIP = "127.0.0.1",port = "5556",machineIP=''):
     while True:
         socket.send_string("%d %s" % (topic, machineIP))
         time.sleep(1)
+
+    getLogger().error("sending heart beat finished")
 
 if __name__ == "__main__": 
     # if len(sys.argv)>=3:

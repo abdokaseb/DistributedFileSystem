@@ -47,6 +47,7 @@ def checkLive(portsAvailable,timeStam):
                 portsAvailable[recvIP] = portsSlavesClient
 
 def recevHeartBeat(portsAvailable,rootIP, port):
+    getLogger().info("Database Master start track herat beat at IP:Port {}:{}".format(rootIP,port))
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
     socket.bind ("tcp://%s:%s" % (rootIP, port))
@@ -59,8 +60,7 @@ def recevHeartBeat(portsAvailable,rootIP, port):
     pCheckTime.start()
 
     while True:
-        topic, recvIP = socket.recv_string().split()
-        getLogger().info("alive from IP={}".format(recvIP))
+        topic, recvIP = socket.recv_string().split()        
         try:
             timeStam[recvIP] += 1
         except:

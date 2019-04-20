@@ -13,7 +13,7 @@ from Constants import portsDatanodeClient
 from Util import getLogger,getMyIP
 
 def SendSlave(port,qSQLs):
-    getLogger().info("Port {} start to sending to slaves".format(port))
+    getLogger().info("Port {} start to sending new users to slaves".format(port))
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.bind("tcp://%s:%s" % (getMyIP(),port))
@@ -22,13 +22,14 @@ def SendSlave(port,qSQLs):
     while True:
         if getFromQueue == 1:
             message = qSQLs.get()
-        print("send to slaves port "+ port)
+        # print("send to slaves port "+ port)
         socket.send_string(message)
+        getLogger().info("Port {} send {} slave".format(port,message))
         response = socket.recv_string()
-        if response != "True":
-            getFromQueue = 0
-        else:
+        if response == "True":
             getFromQueue = 1
+        else:
+            getFromQueue = 0
 
             
 

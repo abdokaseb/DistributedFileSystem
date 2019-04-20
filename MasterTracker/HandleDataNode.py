@@ -48,7 +48,7 @@ def success(portsAvailable,rootIP, port):
         portsAvailable[rows[0][0]] = a
 
 def uploadSucess (rootIP, port):
-    getLogger().info("uploadSucess Port {} started".format(port))
+    getLogger().info("uploadSucess IP:Port {}:{} started".format(rootIP,port))
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -65,8 +65,9 @@ def uploadSucess (rootIP, port):
     SQL = "INSERT INTO files (UserID, machID, fileName) VALUES (%s,%s,%s)"
     while True:
         UserID, mcahID, fileName = socket.recv_string().split()
+        getLogger().info("Uploded sucessfully: UserID={}, machID={}, fileName={} ".format(UserID, mcahID, fileName))
         dbcursour.execute(SQL,(UserID, mcahID, fileName))
-        getLogger().info("receced UserID={}, machID={}, fileName={} uploded sucessfully".format(UserID, mcahID, fileName))
+        getLogger().info("Uploded sucessfully Added to database: UserID={}, machID={}, fileName={} ".format(UserID, mcahID, fileName))
         socket.send_string("1")
 
 if __name__ == "__main__": 

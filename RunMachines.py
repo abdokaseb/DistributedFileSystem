@@ -1,6 +1,6 @@
 import sys 
 import os
-from Util import setLoggingFile
+
 try:
     typeRun = sys.argv[1]
     if typeRun == 'Client':
@@ -15,23 +15,24 @@ try:
         os.system("python3 MasterTracker/DatabaseMaster/TableInit.py")
         os.system("python3 MasterTracker/DatabaseMaster/DatabaseMaster.py")
     elif typeRun == 'DatabaseSlave':
-        os.system("python3 MasterTracker/DatabaseMaster/TableInit.py")
-        os.system("python3 DataNode/DatabaseSlave/DatabaseSlave.py")
+        machineID = sys.argv[2]
+        os.system("python3 DataNode/DatabaseSlave/TableInit.py")
+        os.system("python3 DataNode/DatabaseSlave/DatabaseSlave.py "+machineID)
     else:
         raise ValueError('error in arguments')
 except:
     print("Error in arguments")
     print("Please write the arguments correctly here is some examples run:write:example")
     print("MasterTracker: the first argument should be MasterTracker")
-    print("\t\tpython3 RunMachines MasterTracker")
+    print("\t\tpython3 RunMachines MasterTracker\n")
     print("DatabaseMaster: the first argument should be DatabaseMaster")
-    print("\t\tpython3 RunMachines DatabaseMaster")
+    print("\t\tpython3 RunMachines DatabaseMaster\n")
     print("DataNode: the first argument should be DataNode, the second argument should be machine ID")
-    print("\t\tpython3 RunMachines DataNode 2")
-    print("DatabaseSlave: the first argument should be DatabaseSlave")
-    print("\t\tpython3 RunMachines DatabaseSlave")
+    print("\t\tpython3 RunMachines DataNode 2\n")
+    print("DatabaseSlave: the first argument should be DatabaseSlave, the second argument should be machine ID")
+    print("\t\tpython3 RunMachines DatabaseSlave 2\n")
     print("Client: the first argument should be Client")
-    print("\t\tpython3 RunMachines Client")
+    print("\t\tpython3 RunMachines Client\n")
 
 
     

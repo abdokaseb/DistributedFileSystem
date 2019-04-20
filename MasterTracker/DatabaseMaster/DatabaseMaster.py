@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves
-from Util import getMyIP,setLoggingFile
+from Util import getMyIP,setLoggingFile,getLogger
 
 def test(portsAvailable):
     print("start Test")
@@ -24,6 +24,7 @@ def test(portsAvailable):
 if __name__ == "__main__":
     setLoggingFile("DatabaseMaster.log")
     machineIP = getMyIP()
+    getLogger().info("Start Database master logging with machine IP={}".format(machineIP))
     manager = mp.Manager()
     sqlQueue = manager.Queue()
     distributorProcess = mp.Process(target=distributorF,args=(sqlQueue,portsdatabaseSlaves))
@@ -33,16 +34,17 @@ if __name__ == "__main__":
     testProcess = mp.Process(target=test,args=(portsAvailableForSlaves,))
     testProcess.start()
 
-    trackSlaves = mp.Process(target=HBSlaves, args=(
+    trackSlavesProcess = mp.Process(target=HBSlaves, args=(
         portsAvailableForSlaves, machineIP, DatabaseportToListenSlaves))
-    trackSlaves.start()
+    trackSlavesProcess.start()
 
     clientsProcesses = mp.Pool(len(portsdatabaseClients))
     clientsProcesses.starmap_async(communicate,[(port,sqlQueue) for port in portsdatabaseClients])
 
     slavesIPProcess = mp.Pool(len(portsHandleClentsToSlaves))
-    slavesIPProcess.starmap_async(CScomm,[(portsAvailableForSlaves,port) for port in portsHandleClentsToSlaves])
+    slavesIPProcess.starmap_async(CScomm,[(portsAvailableForSlaves,machineIP,port) for port in portsHandleClentsToSlaves])
 
     distributorProcess.join()
     clientsProcesses.join()
     slavesIPProcess.join()
+    trackSlavesProcess.join()
