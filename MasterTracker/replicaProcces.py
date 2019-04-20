@@ -54,7 +54,6 @@ def getSrcDstMach(fileName,availReplicaPorts):
     dstMachines =  dbcursour.fetchall()
     #print(srcMachines,dstMachines)
     srcMachine = dstMachine = None # the chosen ones
-
     for machId,machIP,userID in srcMachines:
         if(len(availReplicaPorts[machId])>0):
             srcMachine = machId ,machIP, availReplicaPorts[machId][0],userID
@@ -88,7 +87,7 @@ def replicate(availReplicaPorts):
             except Exception as e:
                 getLogger().error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
             else:
-                fakeUserId, fakeMachId = random.randint(-1000000,-1),random.randint(-1000000,-1) 
+                fakeUserId, fakeMachId = random.randint(-10000000,-1),random.randint(-10000000,-1) 
                 try:
                     fakeReplication(fakeUserId,fakeMachId,fileName) # if uploading process take so long may be try to upload same file issued having more unccessary replication
                     prc = mp.Process(target = notifyMachinesAndConfirmReplication,args=(srcMach,dstMach,fileName,availReplicaPorts,fakeUserId,fakeMachId)).start()

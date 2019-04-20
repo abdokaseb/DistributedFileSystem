@@ -14,36 +14,35 @@ from Constants import portsDatanodeClient, portsDatanodeDatanode, masterHeartPor
 
 
 
-def handleReplica(port):
+def handleReplica(port,machineID):
     while True:
         context = zmq.Context()
         socket = context.socket(zmq.REP)
         socket.bind("tcp://%s:%s" % (getMyIP(),port))
-        getLogger().info("A Replica Process alive with ports" + str(port))
+        getLogger().info("A Replica Process alive with ports " + str(port))
         if(socket.recv_string()=="READY"):
             socket.send_string("YES")
             recvMsg = socket.recv_json()
             socket.setsockopt(zmq.LINGER, 0)  #clear socket buffer
             socket.close()
-            getLogger().info("RECIVED MESSAGE "+ recvMsg)
+            getLogger().info("RECIVED MESSAGE {}".format(recvMsg))
             if(recvMsg['src']==True):
                 getLogger().info("My ID is {} and I will send replica".format(machineID))
                 context = zmq.Context()
                 successSocket = context.socket(zmq.REQ)
                 successSocket.connect("tcp://%s:%s" % tuple(recvMsg['confirmSuccesOnIpPort']))
                 try:
-                    #mach = '../node_1/' if recvMsg['userID'] == 10 else '../node_2/'
-                    uploadSrc((getMyIP(),port),str(recvMsg['userID']) +'_'+recvMsg['fileName'])          
+                    uploadSrc((getMyIP(),port),DIR,str(recvMsg['userID']) +'_'+recvMsg['fileName'])          
                     successSocket.send_string("success")
                 except Exception as e:
                     getLogger().info("My ID is {} and Upload failed ".format(machineID) + str(e))
                 successSocket.setsockopt(zmq.LINGER, 0)
                 successSocket.close()
             elif (recvMsg['src']==False):
-                #mach = '../node_2/' if recvMsg['userID'] == 10 else '../node_1/'
                 getLogger().info("My ID is {} and I will recv replica".format(machineID) + str(recvMsg['userID']) +'_'+recvMsg['fileName'])
                 try:
-                    uploadDst(tuple(recvMsg['recvFromIpPort']),str(recvMsg['userID']) +'_'+recvMsg['fileName'])  
+                    #uploadDst( tuple(recvMsg['recvFromIpPort']) ,DIR[:-1]+'2/' ,str(recvMsg['userID']) +'_'+recvMsg['fileName'] , machineID)  
+                    uploadDst( tuple(recvMsg['recvFromIpPort']) ,DIR ,str(recvMsg['userID']) +'_'+recvMsg['fileName'] , machineID)  
                 except Exception as e:
                     getLogger().info("My ID is {} and Upload failed on dst machine ".format(machineID) + str(e))
         else:
@@ -83,6 +82,7 @@ if __name__ == "__main__":
     machineID = int(sys.argv[1])
     setLoggingFile("DataNode{}.log".format(machineID))
     machineIP = getMyIP()
+
     getLogger().info("DataNode Started with machine IP {} machine ID {}".format(machineIP,machineID))
 
 
@@ -99,7 +99,8 @@ if __name__ == "__main__":
 
     #### replica processes
     handleReplicaProcesses = mp.Pool(len(defaultAvaliableRepiclaPortsDataNodeDataNode))
-    handleReplicaProcesses.map_async(handleReplica,defaultAvaliableRepiclaPortsDataNodeDataNode)
+    handleReplicaProcesses.starmap_async(handleReplica,[ (port,machineID) for port in defaultAvaliableRepiclaPortsDataNodeDataNode ])
+
 
     ################ alive process 
     aliveProcesses = mp.Process(target=sendHeartBeat, args=(

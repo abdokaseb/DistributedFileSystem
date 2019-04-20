@@ -11,7 +11,7 @@ from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MAS
 #getLogger().info("asdasdasdasd")
 sys.path.insert(0,"../MasterTracker/")
 
-from Util import getMyIP,setgetLogger()File,getLogger
+from Util import getMyIP,setLoggingFile,getLogger
 
  
 def userInput(socket):
@@ -317,7 +317,7 @@ def SignUp(socket,Port,userName,Email,Password):
 
 
 if __name__ == "__main__":
-    setgetLogger()File("Client.log")
+    setLoggingFile("Client.log")
     getLogger().info("Client Started")
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
