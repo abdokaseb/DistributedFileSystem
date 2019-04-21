@@ -2,7 +2,6 @@ import sys
 import zmq
 import time
 import threading 
-import mysql.connector
 import copy
 import os
 

@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
-from Constants import portsDatanodeClient
+from Constants import portsDatanodeClient, MASTER_DATABASE_HOST, MASTER_DATABASE_USER, MASTER_DATABASE_PASSWORD, MASTER_DATABASE_DATABASE
 from Util import getLogger,getMyIP
 
 
@@ -17,10 +17,10 @@ from Util import getLogger,getMyIP
 def communicate(port,qSQLs):
     getLogger().info("Port {} is lisening for clients to add new users".format(port))
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="lookUpDataMaster",
+        host= MASTER_DATABASE_HOST,
+        user= MASTER_DATABASE_USER,
+        passwd= MASTER_DATABASE_PASSWORD,
+        database= MASTER_DATABASE_DATABASE,
         autocommit=True
     )
     dbcursour = mydb.cursor()    

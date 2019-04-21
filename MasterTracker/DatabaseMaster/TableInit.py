@@ -1,22 +1,27 @@
 import mysql.connector
 import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))))
+
+from Constants import MASTER_DATABASE_HOST, MASTER_DATABASE_USER, MASTER_DATABASE_PASSWORD, MASTER_DATABASE_DATABASE
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd=""
+  host= MASTER_DATABASE_HOST,
+  user= MASTER_DATABASE_USER,
+  passwd= MASTER_DATABASE_PASSWORD,
 )
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE DATABASE IF NOT EXISTS lookUpDataMaster")
+mycursor.execute("CREATE DATABASE IF NOT EXISTS "+MASTER_DATABASE_DATABASE)
 
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd="",
-  database="lookUpDataMaster",
+  host= MASTER_DATABASE_HOST,
+  user= MASTER_DATABASE_USER,
+  passwd= MASTER_DATABASE_PASSWORD,
+  database= MASTER_DATABASE_DATABASE,
   autocommit=True
 )
 

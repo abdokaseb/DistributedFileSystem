@@ -2,17 +2,17 @@ import sys,zmq,time,mysql.connector,os
 import copy,json,random ,multiprocessing as mp 
 sys.path.append("./")
 from Util import getMyIP
-from Constants import MIN_REPLICA_COUNT,defaultAvaliableRepiclaPortsDataNodeDataNode
+from Constants import MIN_REPLICA_COUNT,defaultAvaliableRepiclaPortsDataNodeDataNode,  MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
 # INET_NTOA IPuintToStr 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            passwd="",
-            database="lookUpData",
-            autocommit = True
-        )
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
+        autocommit = True
+    )
 
 
 def fakeReplication(fakeUserID,fakeMachId,fileName):

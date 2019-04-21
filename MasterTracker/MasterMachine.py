@@ -12,7 +12,7 @@ from replicaProcces import replicate as replicateFunc
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess
+from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
 from Util import getMyIP,getLogger,setLoggingFile
 
 
@@ -26,10 +26,10 @@ def test(portsAvailable):
 
 def readMachinesIDs():
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="lookUpData",
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
         autocommit = True
     )
 

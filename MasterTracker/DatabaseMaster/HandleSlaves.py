@@ -2,7 +2,6 @@ import zmq
 import time
 import sys
 import multiprocessing as mp
-import mysql.connector
 import json
 import os
 

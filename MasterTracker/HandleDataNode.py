@@ -6,7 +6,7 @@ import mysql.connector
 import copy
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Constants import portsDatanodeClient
+from Constants import portsDatanodeClient, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
 from Util import getMyIP, getLogger
 
 
@@ -15,10 +15,10 @@ machineIP = getMyIP()
 
 def success(portsAvailable,rootIP, port):
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="lookUpData",
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
         autocommit = True
     )
 
@@ -50,10 +50,10 @@ def success(portsAvailable,rootIP, port):
 def uploadSucess (rootIP, port):
     getLogger().info("uploadSucess IP:Port {}:{} started".format(rootIP,port))
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="lookUpData",
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
         autocommit = True
     )
 

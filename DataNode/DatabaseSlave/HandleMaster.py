@@ -5,15 +5,19 @@ import multiprocessing as mp
 import mysql.connector
 import json
 from Util import getLogger
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from Constants import SLAVE_DATABASE_HOST,SLAVE_DATABASE_USER,SLAVE_DATABASE_PASSWORD,SLAVE_DATABASE_DATABASE
 
 
 def communicate(port,masterIP):
     getLogger().info("Database Slave start to take new users from the master, IP:Port {}:{}".format(masterIP,port))
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="lookUpDataSlave",
+        host=SLAVE_DATABASE_HOST,
+        user=SLAVE_DATABASE_USER,
+        passwd=SLAVE_DATABASE_PASSWORD,
+        database=SLAVE_DATABASE_DATABASE,
         autocommit=True
     )
     dbcursour = mydb.cursor()    

@@ -8,19 +8,18 @@ import os
 import random
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Constants import portsDatanodeClient, USERACTIONS
+from Constants import portsDatanodeClient, USERACTIONS, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
 from Util import getLogger
 
 
 #USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
 
 def communicate(portsAvailable,rootIP,port):
-    getLogger().info("Start listen to clients at IP:Port {}:{}".format(rootIP,port))
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
-        database="lookUpData",
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
         autocommit=True
     )
     dbcursour = mydb.cursor()    
@@ -28,6 +27,7 @@ def communicate(portsAvailable,rootIP,port):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://%s:%s" % (rootIP,port))
+    getLogger().info("Start listen to clients at IP:Port {}:{}".format(rootIP,port))
     while True:
         #  Wait for next request from client
         message = socket.recv_string().split()

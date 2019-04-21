@@ -1,22 +1,26 @@
 import mysql.connector
 import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from Constants import SLAVE_DATABASE_HOST,SLAVE_DATABASE_USER,SLAVE_DATABASE_PASSWORD,SLAVE_DATABASE_DATABASE
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd=""
+  host=SLAVE_DATABASE_HOST,
+  user=SLAVE_DATABASE_USER,
+  passwd=SLAVE_DATABASE_PASSWORD
 )
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE DATABASE IF NOT EXISTS lookUpDataSlave")
+mycursor.execute("CREATE DATABASE IF NOT EXISTS "+SLAVE_DATABASE_DATABASE)
 
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd="",
-  database="lookUpDataSlave",
+  host=SLAVE_DATABASE_HOST,
+  user=SLAVE_DATABASE_USER,
+  passwd=SLAVE_DATABASE_PASSWORD,
+  database=SLAVE_DATABASE_DATABASE,
   autocommit=True
 )
 

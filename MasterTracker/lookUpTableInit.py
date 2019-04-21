@@ -1,22 +1,27 @@
 import mysql.connector
 import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from Constants import MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
+
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd=""
+  host=MASTER_TRAKER_HOST,
+  user=MASTER_TRAKER_USER,
+  passwd=MASTER_TRAKER_PASSWORD
 )
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE DATABASE IF NOT EXISTS lookUpData")
+mycursor.execute("CREATE DATABASE IF NOT EXISTS "+MASTER_TRAKER_DATABASE)
 
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd="",
-  database="lookUpData"
+  host=MASTER_TRAKER_HOST,
+  user=MASTER_TRAKER_USER,
+  passwd=MASTER_TRAKER_PASSWORD,
+  database=MASTER_TRAKER_DATABASE
 )
 
 mycursor = mydb.cursor()

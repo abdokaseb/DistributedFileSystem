@@ -13,6 +13,23 @@ portsSlavesClient = ["5756", "5757", "5758"]
 portsdatabaseSlaves = ["8001", "8002", "8003", "8004", "8005", "8006"]
 DatabaseportToListenSlaves = "8101"
 N_DATABASE_SLAVES=5
+
+############ DATABASE ENTRY
+MASTER_TRAKER_HOST="localhost"
+MASTER_TRAKER_USER="root"
+MASTER_TRAKER_PASSWORD=""
+MASTER_TRAKER_DATABASE="lookUpData"
+
+MASTER_DATABASE_HOST="localhost"
+MASTER_DATABASE_USER="root"
+MASTER_DATABASE_PASSWORD=""
+MASTER_DATABASE_DATABASE="lookUpDataMaster"
+
+SLAVE_DATABASE_HOST="localhost"
+SLAVE_DATABASE_USER="root"
+SLAVE_DATABASE_PASSWORD=""
+SLAVE_DATABASE_DATABASE="lookUpDataSlave"
+
 ############
 masterPortUploadSucess = "7010"
 masterHeartPort = "5556"
