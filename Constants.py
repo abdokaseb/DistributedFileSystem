@@ -9,10 +9,10 @@ MASTER_FILESYSTEM_MACHINE_IP = '192.168.1.17'
 
 ############ DATABASE
 MASTER_DATABASE_MACHINE_IP = '192.168.1.17'
-portsSlavesClient = ["5756", "5757", "5758"]
-portsdatabaseSlaves = ["8001", "8002", "8003", "8004", "8005", "8006"]
-DatabaseportToListenSlaves = "8101"
 N_DATABASE_SLAVES=5
+portsSlavesClient = list(range(13300,13307))
+portsdatabaseSlaves = list(range(13310,13310+N_DATABASE_SLAVES))
+DatabaseportToListenSlaves = "13320"
 
 ############ DATABASE ENTRY
 MASTER_TRAKER_HOST="localhost"
@@ -31,22 +31,22 @@ SLAVE_DATABASE_PASSWORD=""
 SLAVE_DATABASE_DATABASE="lookUpDataSlave"
 
 ############
-masterPortUploadSucess = "7010"
-masterHeartPort = "5556"
+masterPortUploadSucess = "13321"
+masterHeartPort = "13322"
 
 ############### replica constanta
 MIN_REPLICA_COUNT = 2
 
 ###### used as constant in client to access master to send request ( ls ,upload ,download)
-masterClientPorts = ["5001", "5002", "5003", "5004", "5005", "5006"]
-clientDownloadPorts = ["8501", "8502", "8503", "8504", "8505", "8506"]
-portsHandleClentsToSlaves = ["8201", "8202", "8203", "8204", "8205", "8206"]
-portsdatabaseClients = ["7001", "7002", "7003", "7004", "7005", "7006"]
+masterClientPorts = list(range(13330,13337))
+clientDownloadPorts = list(range(13340,13347))
+portsHandleClentsToSlaves = list(range(13350,13357))
+portsdatabaseClients = list(range(13360,13367))
 
 ########## used in Data node and master
-portsDatanodeClient = ["6001", "6002", "6003", "6004", "6005", "6006", "6007"]
-portsDatanodeDatanode = ["6101", "6102","6103", "6104", "6105", "6106", "6107"]
-defaultAvaliableRepiclaPortsDataNodeDataNode = [str(9000+i) for i in range(20)]
+portsDatanodeClient = list(range(13370,13377))
+portsDatanodeDatanode = list(range(13380,13387))
+defaultAvaliableRepiclaPortsDataNodeDataNode = list(range(13390,13410))
 
 
-clientUploadIpPort = (getMyIP(), "7225")
+clientUploadIpPort = (getMyIP(), "13323")
