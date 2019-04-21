@@ -90,7 +90,7 @@ def uploadFile(ipPort, DIR, fileName,machineID):
 
     ######################3
     ####### here we will norify the tracker
-    userID,realFileName = fileName.split('_')
+    userID,realFileName = fileName.split('_',1)
     uploadSucess(MASTER_FILESYSTEM_MACHINE_IP,masterPortUploadSucess,userID, machineID, realFileName)
     return 0
 
