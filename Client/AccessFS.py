@@ -145,11 +145,13 @@ def Upload(ipPort,DIR,fileName):
     # change this ip (client Device) with something general
     pushSocket.bind("tcp://%s:%s"%(ipPort))
     ############################
+    i = 0
     with open(DIR+fileName, "rb") as f:
         chunk = f.read(CHUNK_SIZE)
         while chunk:                                                     # push - pull to send the video
             pushSocket.send(chunk)
-            #print ('count')
+            print (i)
+            i+= 1
             chunk = f.read(CHUNK_SIZE)
     
     f.close()
@@ -177,11 +179,11 @@ def Download(DataNodePorts, DIR, fileName, userID, userAction):
     downloadProcesses = mp.Pool(len(DataNodePorts))
     
     downloadProcesses.starmap(downloadPart, parameters)
-
+    print("after donwload ")
     downloadProcesses.close()
-
+    print("after donwload ")
     downloadProcesses.join()
-
+    print("after donwload ")
     with  open(DIR+fileName, 'wb+') as fileobj :
         for i in range(len(DataNodePorts)):
             with open(DIR+str(userID)+"_" +str(i)+"_"+fileName, 'rb+') as partFile:
@@ -263,33 +265,35 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
     
     context = zmq.Context()
     opSocket = context.socket(zmq.REQ)
-    opSocket.bind('tcp://'+port)
+    opSocket.connect('tcp://'+port)
     opSocket.send_string("{} {} {} {} {} {}".format(
         userAction, userId, fileName, partNum, chunkSize, numberOfPorts))
-    print("type of operation and user and file and chunkazes name have been send")
+    print("type of  operation and user and file and chunkazes name have been send")
     message = opSocket.recv_string()
-    getLogger().info(message)
+    print(message)
    
 
     opSocket.send_string(getMyIP()+":"+str(clientDownloadPorts[partNum]))
-    getLogger().info("send ip push pull to datanode port")
+    print("send ip push pull to datanode port")
     message = opSocket.recv_string()
-    getLogger().info(message)
+    print(message)
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
-    pullSocket.connect("tcp://"+getMyIP()+":"+str(clientDownloadPorts[partNum]))
+    pullSocket.bind("tcp://"+getMyIP()+":"+str(clientDownloadPorts[partNum]))
 
     fileobj = open(DIR+str(userId)+"_"+str(partNum)+"_"+fileName, 'wb+')
     while True:
         chunk = pullSocket.recv()
+        print("asdadasdasdassss")
         #print('data received in '+str(partNum))
         #counter = counter+1
         if chunk is b'':
-            getLogger().info('condition satisfied')
+            print('condition satisfied')
             break
         fileobj.write(chunk)
 
     fileobj.close()
+
 def SignUp(socket,Port,userName,Email,Password):
    
     getLogger().info(userName)

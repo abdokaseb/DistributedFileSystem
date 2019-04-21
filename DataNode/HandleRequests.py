@@ -75,7 +75,7 @@ def uploadFile(ipPort, DIR, fileName,machineID):
     counter = 0
     while True:
         chunk = pullSocket.recv()
-        #print(counter)
+        print(counter)
         counter = counter+1
         if chunk is b'':
             print('condition satisfied')
@@ -103,7 +103,7 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
     pushSocket = context.socket(zmq.PUSH)
     print(ipPort)
     pushSocket.connect("tcp://"+ipPort)
-    getLogger().info(" Successful connect to the pull socket for download and IP:Port is %s:%s" % ipPort)
+    getLogger().info(" Successful connect to the pull socket for download and IP:Port is %s" % ipPort)
 
     #getLogger().info(" after connectiong  to the push socket  ")
 
@@ -119,7 +119,6 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
             for i in range(math.floor(size/int(chunkSize))):
                 chunk = f.read(int(chunkSize))
                 pushSocket.send(chunk)
-                print('data sended from '+partNum)
 
             rest = size-math.floor(size/int(chunkSize))*int(chunkSize)
             if rest > 0:
@@ -129,12 +128,13 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
             chunk = f.read(int(chunkSize))
             while chunk:
                 pushSocket.send(chunk)
-                print('data sended from '+partNum)
                 chunk = f.read(int(chunkSize))
 
     f.close()
     pushSocket.send(b'')
-    getLogger().info("IP:Port is %s:%s" % ipPort + " Finished download to client")
+    print("finish Send")
+    time.sleep(3)
+    #getLogger().info("IP:Port is %s" % ipPort + " Finished download to client")
 
     #getLogger().info(" end download with partnumber = "+partNum)
 

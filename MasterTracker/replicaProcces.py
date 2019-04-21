@@ -25,7 +25,9 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         socketDst.send_string("READY")
         if(rcvTimOut(socketSrc,1000) == "YES" and rcvTimOut(socketDst,1000) == "YES"):
             socketSrc.send_json({"fileName":fileName, "confirmSuccesOnIpPort":(getMyIP(),availPort) ,"src":True,"userID":srcMach[-1]})
+            socketSrc.recv_string();#socketSrc.close()
             socketDst.send_json({"recvFromIpPort":srcMach[1:3],"fileName":fileName,"userID":srcMach[-1],"src":False})
+            socketDst.recv_string();#socketDst.close()
             success = confirmSocket.recv_string()
             if(success == "success"):
                 confirmSocket.send_string('OK')
@@ -45,6 +47,13 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
 
 
 def getSrcDstMach(fileName,availReplicaPorts):
+    db = mysql.connector.connect(
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
+        autocommit = True
+    )
     dbcursour = db.cursor()
     srcMachQuery = "select ID,INET_NTOA(IP),UserID from machines,files where isAlive = 1 and machID = ID and fileName ='{}'".format(fileName)
     dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where m.isAlive = 1 and (fileName !='{}' OR fileName IS NULL)".format(fileName)
@@ -52,11 +61,14 @@ def getSrcDstMach(fileName,availReplicaPorts):
     srcMachines =  dbcursour.fetchall() 
     dbcursour.execute(dstMachQuery)
     dstMachines =  dbcursour.fetchall()
-    #print(srcMachines,dstMachines)
+
+    from random import choice
+
     srcMachine = dstMachine = None # the chosen ones
     for machId,machIP,userID in srcMachines:
         if(len(availReplicaPorts[machId])>0):
-            srcMachine = machId ,machIP, availReplicaPorts[machId][0],userID
+            #srcMachine = machId ,machIP, availReplicaPorts[machId][0],userID
+            srcMachine = machId ,machIP, choice(availReplicaPorts[machId]),userID
             break;
 
     if(srcMachine == None):
@@ -64,10 +76,15 @@ def getSrcDstMach(fileName,availReplicaPorts):
 
     for machId,machIP in dstMachines:
         if(len(availReplicaPorts[machId])>0 and machId != srcMachine[0]):
-            dstMachine = machId, machIP, availReplicaPorts[machId][0]
+            #dstMachine = machId, machIP, availReplicaPorts[machId][0]
+            #a , b = availReplicaPorts[machId],availReplicaPorts[srcMachine[0]]
+            #a.pop(0) ; b.pop(0)
+            #availReplicaPorts[machId],availReplicaPorts[srcMachine[0]] = a,b
+            dstMachine = machId, machIP, choice(availReplicaPorts[machId])
             a , b = availReplicaPorts[machId],availReplicaPorts[srcMachine[0]]
-            a.pop(0) ; b.pop(0)
+            a.remove(dstMachine[-1]) ; b.remove(srcMachine[-2])
             availReplicaPorts[machId],availReplicaPorts[srcMachine[0]] = a,b
+            
             return srcMachine,dstMachine
             
     if(dstMachine == None):
@@ -79,7 +96,8 @@ def replicate(availReplicaPorts):
     while True:
         fillAvailReplicaPorts(availReplicaPorts)
         filesToReplicate = getFilesToReplicate()
-        getLogger().info("Files to replicate {}".format(filesToReplicate))
+        if len(filesToReplicate):
+            getLogger().info("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
                 srcMach,dstMach = getSrcDstMach(fileName,availReplicaPorts)

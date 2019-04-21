@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Constants import MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
+from Constants import MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE, MAX_NUMBER_MACHINES
 
 
 mydb = mysql.connector.connect(
@@ -32,7 +32,7 @@ mycursor.execute("CREATE TABLE IF NOT EXISTS files (UserID Int, machID Int, file
 # sql = ''
 try:
   mainSQL = "INSERT INTO machines (ID,IP, isAlive) VALUES (%s,INET_ATON(%s), %s);"
-  for i in range(1,21):
+  for i in range(1,MAX_NUMBER_MACHINES+1):
     # sql += mainSQL.format(i)
     mycursor.execute(mainSQL,(str(i),'0.0.0.0','0'))
     mydb.commit()

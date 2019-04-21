@@ -28,10 +28,20 @@ def communicate(portsAvailable,rootIP,port):
     socket = context.socket(zmq.REP)
     socket.bind("tcp://%s:%s" % (rootIP,port))
     getLogger().info("Start listen to clients at IP:Port {}:{}".format(rootIP,port))
+    # socket.setsockopt(zmq.LINGER,0)
+    # socket.close()
+    # context = zmq.Context()
+    # socket = context.socket(zmq.REP)
+    # socket.bind("tcp://192.168.43.110:6330")
+    # socket.recv_string()
+    # print("HEEEEELoooooo")
+    # socket.send_string("here")
     while True:
         #  Wait for next request from client
         message = socket.recv_string().split()
-        getLogger().info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],USERACTIONS[int(message[1])]))
+        print(message)
+        # getLogger().info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],USERACTIONS[int(message[1])]))
+        print(message)
         if int(message[1]) == USERACTIONS['LS']:
             result = listFiles(message[0],dbcursour)
             socket.send_json(result)
@@ -41,7 +51,7 @@ def communicate(portsAvailable,rootIP,port):
         elif int(message[1]) == USERACTIONS['DOWNLOAD']:
             result = downloadFile(message[0],message[2],dbcursour,portsAvailable)
             socket.send_json(result)
-        getLogger().info("Port {} replied to client with id={} for instunction {} with result = {}".format(port,message[0],USERACTIONS[int(message[1])],result))
+        # getLogger().info("Port {} replied to client with id={} for instunction {} with result = {}".format(port,message[0],USERACTIONS[int(message[1])],result))
         
 
 def listFiles(userID,dbcursour):
