@@ -29,21 +29,6 @@ def releasePorts(srcMachine,dstMachine,availReplicaPorts):
     availReplicaPorts[srcMachine[0]], availReplicaPorts[dstMachine[0]]= a,b
 
 
-def confirmReplication(fakeUserID,fakeMachId,realUserID,realMachId,fileName):
-    db = mysql.connector.connect(
-        host=MASTER_TRAKER_HOST,
-        user=MASTER_TRAKER_USER,
-        passwd=MASTER_TRAKER_PASSWORD,
-        database=MASTER_TRAKER_DATABASE,
-        autocommit = True
-    )   
-
-    dbcursour = db.cursor()
-    removeFakeRecodQuery = "delete files where UserID={}, machID={} where fileName='{}'"
-    removeFakeRecodQuery = removeFakeRecodQuery.format(fakeUserID,fakeMachId,fileName)
-    dbcursour.execute(removeFakeRecodQuery)
-    print("confirem ",dbcursour.rowcount)
-
 def removeReplication(fakeUserID,fakeMachId,fileName):
     db = mysql.connector.connect(
         host=MASTER_TRAKER_HOST,

@@ -90,7 +90,7 @@ def uploadFile(ipPort, DIR, fileName,machineID):
 
     ######################3
     ####### here we will norify the tracker
-    userID,realFileName = fileName.split('_')
+    userID,realFileName = fileName.split('_',1)
     uploadSucess(MASTER_FILESYSTEM_MACHINE_IP,masterPortUploadSucess,userID, machineID, realFileName)
     return 0
 
@@ -119,7 +119,6 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
             for i in range(math.floor(size/int(chunkSize))):
                 chunk = f.read(int(chunkSize))
                 pushSocket.send(chunk)
-                print('data sended from '+partNum)
 
             rest = size-math.floor(size/int(chunkSize))*int(chunkSize)
             if rest > 0:
@@ -129,13 +128,13 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
             chunk = f.read(int(chunkSize))
             while chunk:
                 pushSocket.send(chunk)
-                # print('data sended from '+partNum)
                 chunk = f.read(int(chunkSize))
 
     f.close()
     pushSocket.send(b'')
-    print("finish download from "+ partNum)
-    # getLogger().info("IP:Port is %s" % ipPort + " Finished download to client")
+    print("finish Send")
+    time.sleep(3)
+    #getLogger().info("IP:Port is %s" % ipPort + " Finished download to client")
 
     #getLogger().info(" end download with partnumber = "+partNum)
 

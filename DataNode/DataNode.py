@@ -24,8 +24,8 @@ def handleReplica(port,machineID):
             socket.send_string("YES")
             recvMsg = socket.recv_json()
             socket.send_string("OK")
-            # socket.setsockopt(zmq.LINGER, 10)  #clear socket buffer
             socket.close()
+            time.sleep(1)# ensure that master closed the source too 
             getLogger().info("RECIVED MESSAGE {}".format(recvMsg))
             if(recvMsg['src']==True):
                 getLogger().info("My ID is {} and I will send replica".format(machineID))
@@ -43,7 +43,7 @@ def handleReplica(port,machineID):
                 getLogger().info("My ID is {} and I will recv replica".format(machineID) + str(recvMsg['userID']) +'_'+recvMsg['fileName'])
                 try:
                     #uploadDst( tuple(recvMsg['recvFromIpPort']) ,DIR[:-1]+'2/' ,str(recvMsg['userID']) +'_'+recvMsg['fileName'] , machineID)  
-                    uploadDst( tuple(recvMsg['recvFromIpPort'][0],"13501") ,DIR ,str(recvMsg['userID']) +'_'+recvMsg['fileName'] , machineID)  
+                    uploadDst(tuple(recvMsg['recvFromIpPort']),DIR ,str(recvMsg['userID']) +'_'+recvMsg['fileName'] , machineID)  
                 except Exception as e:
                     getLogger().info("My ID is {} and Upload failed on dst machine ".format(machineID) + str(e))
         else:

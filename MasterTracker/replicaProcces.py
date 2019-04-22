@@ -24,14 +24,14 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         socketSrc.send_string("READY")
         socketDst.send_string("READY")
         if(rcvTimOut(socketSrc,1000) == "YES" and rcvTimOut(socketDst,1000) == "YES"):
-            socketSrc.send_json({"fileName":fileName, "confirmSuccesOnIpPort":(getMyIP(),availPort) ,"src":True,"userID":srcMach[-1]});socketSrc.recv_string()
-            socketDst.send_json({"recvFromIpPort":srcMach[1:3],"fileName":fileName,"userID":srcMach[-1],"src":False});socketDst.recv_string()
+            socketSrc.send_json({"fileName":fileName, "confirmSuccesOnIpPort":(getMyIP(),availPort) ,"src":True,"userID":srcMach[-1]})
+            socketSrc.recv_string();socketSrc.close()
+            socketDst.send_json({"recvFromIpPort":srcMach[1:3],"fileName":fileName,"userID":srcMach[-1],"src":False})
+            socketDst.recv_string();socketDst.close()
             success = confirmSocket.recv_string()
             if(success == "success"):
                 confirmSocket.send_string('OK')
-                confirmReplication(fakeUserId,fakeMachId,srcMach[-1],dstMach[0],fileName)
-            else:
-                removeReplication(fakeUserId,fakeMachId,fileName)
+            removeReplication(fakeUserId,fakeMachId,fileName)
             releasePorts(srcMach,dstMach,availReplicaPorts)
     except Exception as e:
         socketDst.setsockopt(zmq.LINGER, 0)  #clear socket buffer
@@ -41,7 +41,6 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         removeReplication(fakeUserId,fakeMachId,fileName)
         releasePorts(srcMach,dstMach,availReplicaPorts)
         getLogger().error("something went wrong on notifying machine "+str(e))
-
 
 
 def getSrcDstMach(fileName,availReplicaPorts):
@@ -59,11 +58,14 @@ def getSrcDstMach(fileName,availReplicaPorts):
     srcMachines =  dbcursour.fetchall() 
     dbcursour.execute(dstMachQuery)
     dstMachines =  dbcursour.fetchall()
-    #print(srcMachines,dstMachines)
+
+    #from random import choice
+
     srcMachine = dstMachine = None # the chosen ones
     for machId,machIP,userID in srcMachines:
         if(len(availReplicaPorts[machId])>0):
             srcMachine = machId ,machIP, availReplicaPorts[machId][0],userID
+            #srcMachine = machId ,machIP, choice(availReplicaPorts[machId]),userID
             break;
 
     if(srcMachine == None):
@@ -75,6 +77,11 @@ def getSrcDstMach(fileName,availReplicaPorts):
             a , b = availReplicaPorts[machId],availReplicaPorts[srcMachine[0]]
             a.pop(0) ; b.pop(0)
             availReplicaPorts[machId],availReplicaPorts[srcMachine[0]] = a,b
+            # dstMachine = machId, machIP, choice(availReplicaPorts[machId])
+            # a , b = availReplicaPorts[machId],availReplicaPorts[srcMachine[0]]
+            # a.remove(dstMachine[-1]) ; b.remove(srcMachine[-2])
+            # availReplicaPorts[machId],availReplicaPorts[srcMachine[0]] = a,b
+            
             return srcMachine,dstMachine
             
     if(dstMachine == None):
