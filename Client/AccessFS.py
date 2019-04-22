@@ -33,7 +33,8 @@ def userInput(socket):
             #Kasep Function Call to check the User Data Using Slaves and ID Update
             UserID=requestDatabaseSlave(MASTER_DATABASE_MACHINE_IP,portsHandleClentsToSlaves,UserName,Password)
             getLogger().info("call sign in with username {}, password {} and get user ID equals {}".format(UserName,Password,UserID))
-            if(UserID== -2):
+            if(UserID== "-2"):
+                print("Worng username and password")
                 print("Press 1 to End process or 2 to enter again")
                 ContinueCheck=input()
         elif (DatbaseInput=="2"):
@@ -49,7 +50,7 @@ def userInput(socket):
             UserID=SignUp(MASTER_FILESYSTEM_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) 
             getLogger().info("call sign up with username {}, password {}, email {} and get user ID equals {}".format(userName,Password,EmailAddress,UserID))
             if(UserID=="-2"):
-                print("Can't Sign Up")
+                print("Can't Sign Up, Email is already in use")
                 print("Press 1 to End process or 2 to enter again")
                 ContinueCheck=input()
     
@@ -66,6 +67,7 @@ def userInput(socket):
         print("Press 1 to Show your files")
         print("Press 2 to Upload file")
         print("Press 3 to Download file")
+        print("Any thing else with exit")
         Function = input()    
         if(Function =="1"):
             getLogger().info("LS action need")
@@ -73,16 +75,14 @@ def userInput(socket):
             LSAction("LS",socket,UserID)
             if(functionCheck=="-1"):
                 print(ErrorMessage)
-            print("Please Press 1 to Use another function or 2 to End")
-            check=input()
     
         elif(Function =="3"):
             getLogger().info("download action need")
             #Fuction Call for Download
-            print("Please, Enter the fileName to be directory of the file to be downloaded in ")
-            DIR = input()
             print("Please, Enter the fileName to be downloaded")
             FileName = input()
+            print("Please, Enter the Directory to be downloaded in ")
+            DIR = input()
             functionCheck=DownloadAction("DOWNLOAD",socket,DIR,FileName,UserID)
             getLogger().info("response after download {}".format(functionCheck))
             if(functionCheck=="-1"):
@@ -98,14 +98,15 @@ def userInput(socket):
             DIR=input()
             functionCheck=UploadAction("UPLOAD", socket, DIR, FileName, UserID)
             getLogger().info("response after upload {}".format(functionCheck))
-            if(functionCheck=="-1"):
+            if(functionCheck==-1):
                 print(ErrorMessage)
-            print("Please Press 1 to Use another function or 2 to End")
-            check=input()
+            else:
+                print("Uploaded Successfully")
         else: 
             getLogger().info("wrong input")
-            print("Please Press 1 to Use another function or 2 to End")
-            check=input()
+            print("Thank you for using our drive")
+            print("Secure, Fast, Safe :D")
+            break
 
 
 #######################################################################
@@ -125,7 +126,7 @@ def requestDatabaseSlave(IP,ports,userName,password):
 
     socket.close()
 
-    retriveSql = "SELECT UserID FROM Users WHERE UserName='{}' and Pass ='{}' ;".format(userName,password)
+    retriveSql = "SELECT UserID FROM Users WHERE UserName='{}' and Pass =SHA('{}') ;".format(userName,password)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://%s" % (msg))
@@ -214,6 +215,9 @@ def DownloadAction(userAction,socket,DIR,fileName,userID):
     if message == "ERROR 404":
         print("Sorry We Are Very Busy")
         return -1 
+    elif message == "NO FILE WITH THIS NAME":
+        print("You don't have files with this name")
+        return -1 
     getLogger().info("Start acutal download DIR {}, fileName {}".format(DIR, fileName))
     Download(message, DIR, fileName, userID, userAction)
         
@@ -225,6 +229,9 @@ def LSAction(userAction,socket,userID):
     print("the list of files are:")
     for i,file in enumerate(files,start=1): print("\t{}- {}".format(i,file)) 
 def UploadAction(userAction, socket, DIR, fileName, userID):
+    if os.path.isfile(DIR+fileName) == False:
+        print("File doesn't exist")
+        return -1
     socket.send_string("{} {} {}".format(userID,USERACTIONS[userAction],fileName))
     message = socket.recv_string()  #this message is the IP:port for the mechine (e.g 192.168.1.9:5554)
     getLogger().info("ports to upload " + message)    

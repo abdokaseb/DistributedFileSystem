@@ -85,6 +85,8 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
     SQL = "SELECT INET_NTOA(IP) FROM machines WHERE ID IN (SELECT machID FROM files WHERE userID = %s and fileName = %s)"
     dbcursour.execute(SQL,(userID,filename))
     machIPsRows = dbcursour.fetchall()
+    if len(machIPsRows) == 0:
+        return json.dumps("NO FILE WITH THIS NAME")
     random.shuffle(machIPsRows)
     listConnections = []
     for machIPRow in machIPsRows:

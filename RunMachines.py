@@ -24,15 +24,15 @@ except:
     print("Error in arguments")
     print("Please write the arguments correctly here is some examples run:write:example")
     print("MasterTracker: the first argument should be MasterTracker")
-    print("\t\tpython3 RunMachines MasterTracker\n")
+    print("\t\tpython3 RunMachines.py MasterTracker\n")
     print("DatabaseMaster: the first argument should be DatabaseMaster")
-    print("\t\tpython3 RunMachines DatabaseMaster\n")
+    print("\t\tpython3 RunMachines.py DatabaseMaster\n")
     print("DataNode: the first argument should be DataNode, the second argument should be machine ID")
-    print("\t\tpython3 RunMachines DataNode 2\n")
+    print("\t\tpython3 RunMachines.py DataNode 2\n")
     print("DatabaseSlave: the first argument should be DatabaseSlave, the second argument should be machine ID")
-    print("\t\tpython3 RunMachines DatabaseSlave 2\n")
+    print("\t\tpython3 RunMachines.py DatabaseSlave 2\n")
     print("Client: the first argument should be Client")
-    print("\t\tpython3 RunMachines Client\n")
+    print("\t\tpython3 RunMachines.py Client\n")
 
 
     
