@@ -24,8 +24,8 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         socketSrc.send_string("READY")
         socketDst.send_string("READY")
         if(rcvTimOut(socketSrc,1000) == "YES" and rcvTimOut(socketDst,1000) == "YES"):
-            socketSrc.send_json({"fileName":fileName, "confirmSuccesOnIpPort":(getMyIP(),availPort) ,"src":True,"userID":srcMach[-1]})
-            socketDst.send_json({"recvFromIpPort":srcMach[1:3],"fileName":fileName,"userID":srcMach[-1],"src":False})
+            socketSrc.send_json({"fileName":fileName, "confirmSuccesOnIpPort":(getMyIP(),availPort) ,"src":True,"userID":srcMach[-1]});socketSrc.recv_string()
+            socketDst.send_json({"recvFromIpPort":srcMach[1:3],"fileName":fileName,"userID":srcMach[-1],"src":False});socketDst.recv_string()
             success = confirmSocket.recv_string()
             if(success == "success"):
                 confirmSocket.send_string('OK')
@@ -45,6 +45,13 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
 
 
 def getSrcDstMach(fileName,availReplicaPorts):
+    db = mysql.connector.connect(
+        host=MASTER_TRAKER_HOST,
+        user=MASTER_TRAKER_USER,
+        passwd=MASTER_TRAKER_PASSWORD,
+        database=MASTER_TRAKER_DATABASE,
+        autocommit = True
+    )
     dbcursour = db.cursor()
     srcMachQuery = "select ID,INET_NTOA(IP),UserID from machines,files where isAlive = 1 and machID = ID and fileName ='{}'".format(fileName)
     dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where m.isAlive = 1 and (fileName !='{}' OR fileName IS NULL)".format(fileName)
@@ -79,7 +86,8 @@ def replicate(availReplicaPorts):
     while True:
         fillAvailReplicaPorts(availReplicaPorts)
         filesToReplicate = getFilesToReplicate()
-        getLogger().info("Files to replicate {}".format(filesToReplicate))
+        if len(filesToReplicate):
+            getLogger().info("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
                 srcMach,dstMach = getSrcDstMach(fileName,availReplicaPorts)
@@ -95,7 +103,7 @@ def replicate(availReplicaPorts):
                     removeReplication(fakeUserId,fakeMachId,fileName)
                     getLogger().error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base " + str(e))
             time.sleep(3)
-        time.sleep(6)
+        time.sleep(15)
 
 if __name__ == "__main__": 
     # machines_files = [(10,8,'B.avi'),(11,3,'V.avi')]#,(3,'gello.txt'),(2,'cello.txt'),(1,'hello.txt'),(2,'hello.txt'),(10,'cello.txt')]

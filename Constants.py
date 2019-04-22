@@ -5,10 +5,10 @@ DIR = "./DataNode/videos/"
 CHUNK_SIZE = 500
 USERACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1, 'LS': 2}
 
-MASTER_FILESYSTEM_MACHINE_IP = '192.168.1.17'
+MASTER_FILESYSTEM_MACHINE_IP = '192.168.43.154'
 
 ############ DATABASE
-MASTER_DATABASE_MACHINE_IP = '192.168.1.17'
+MASTER_DATABASE_MACHINE_IP = '192.168.43.154'
 N_DATABASE_SLAVES=5
 portsSlavesClient = list(range(13300,13307))
 portsdatabaseSlaves = list(range(13310,13310+N_DATABASE_SLAVES))
@@ -36,6 +36,8 @@ masterHeartPort = "13322"
 
 ############### replica constanta
 MIN_REPLICA_COUNT = 2
+
+MAX_NUMBER_MACHINES = 20
 
 ###### used as constant in client to access master to send request ( ls ,upload ,download)
 masterClientPorts = list(range(13330,13337))

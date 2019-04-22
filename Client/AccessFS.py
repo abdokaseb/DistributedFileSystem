@@ -145,11 +145,13 @@ def Upload(ipPort,DIR,fileName):
     # change this ip (client Device) with something general
     pushSocket.bind("tcp://%s:%s"%(ipPort))
     ############################
+    i = 0
     with open(DIR+fileName, "rb") as f:
         chunk = f.read(CHUNK_SIZE)
         while chunk:                                                     # push - pull to send the video
             pushSocket.send(chunk)
-            #print ('count')
+            print (i)
+            i+= 1
             chunk = f.read(CHUNK_SIZE)
     
     f.close()
