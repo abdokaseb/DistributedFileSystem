@@ -87,8 +87,8 @@ def userInput(socket):
             getLogger().info("response after download {}".format(functionCheck))
             if(functionCheck=="-1"):
                 print(ErrorMessage)
-            print("Please Press 1 to Use another function or 2 to End")
-            check=input()
+            # print("Please Press 1 to Use another function or 2 to End")
+            # check=input()
             
         elif (Function== "2"):
             getLogger().info("upload action need")
@@ -249,7 +249,7 @@ def UploadAction(userAction, socket, DIR, fileName, userID):
     socket = context.socket(zmq.REQ)  # Socket to connect with DataNode
     socket.connect(DataNodePort)
 
-    socket.send_string("{} {} {}".format(userAction, userID, fileName))
+    socket.send_string("{} {} {} {}".format(userAction, userID, fileName,clientUploadIpPort[0]+":"+clientUploadIpPort[1]))
     getLogger().info("type of operation and user and file name have been send")
     message = socket.recv_string()
     getLogger().info("after socket receive type of operation and filenae and user to datanode")
@@ -258,9 +258,9 @@ def UploadAction(userAction, socket, DIR, fileName, userID):
         #response from the datanode that the needed type of operation have been send
     
         #the new socket for uploading the data to data node to make it connect to it
-    socket.send_string(clientUploadIpPort[0]+":"+clientUploadIpPort[1])
+    # socket.send_string(clientUploadIpPort[0]+":"+clientUploadIpPort[1])
 
-    message = socket.recv_string()
+    # message = socket.recv_string()
         #response from the datanode that the needed type of operation have been send
     getLogger().info("Start acutal upload clientUploadIpPort {}, DIR {}, fileName {}".format(clientUploadIpPort, DIR, fileName))
 
@@ -273,17 +273,17 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
     context = zmq.Context()
     opSocket = context.socket(zmq.REQ)
     opSocket.connect('tcp://'+port)
-    opSocket.send_string("{} {} {} {} {} {}".format(
-        userAction, userId, fileName, partNum, chunkSize, numberOfPorts))
+    opSocket.send_string("{} {} {} {} {} {} {}".format(
+        userAction, userId, fileName, partNum, chunkSize, numberOfPorts, getMyIP()+":"+str(clientDownloadPorts[partNum])))
     print("type of  operation and user and file and chunkazes name have been send")
     message = opSocket.recv_string()
     print(message)
    
 
-    opSocket.send_string(getMyIP()+":"+str(clientDownloadPorts[partNum]))
+    # opSocket.send_string()
     print("send ip push pull to datanode port")
-    message = opSocket.recv_string()
-    print(message)
+    # message = opSocket.recv_string()
+    # print(message)
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
     pullSocket.bind("tcp://"+getMyIP()+":"+str(clientDownloadPorts[partNum]))

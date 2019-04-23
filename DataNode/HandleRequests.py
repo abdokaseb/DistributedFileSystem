@@ -35,20 +35,22 @@ def communicate(port,DIR,machineIP,machineID):
 
         if action == ACTIONS['UPLOAD']:
             # receive client upload port
-            ipPort = tuple(socket.recv_string().split(':'))
+            # ipPort = tuple(socket.recv_string().split(':'))
+            ipPort = tuple(message[3].split(':'))
             #getLogger().info(" after receiving ports from clinet  " +
             #             " %s : %s " % ipPort)
             print("afterrrrrrrrrrrr seeeend")
-            socket.send_string('pull push socket ip have been received')            
+            # socket.send_string('pull push socket ip have been received')            
             uploadProcess = mp.Process(
                 target=uploadFile, args=(ipPort, DIR, fileName,machineID))
             uploadProcess.start()
             #result = uploadFile(ipPort, fileName)
         elif action == ACTIONS['DOWNLOAD']:
-            ipPort = socket.recv_string()
+            # ipPort = socket.recv_string()
+            ipPort = message[6]
             #getLogger().info(" after receiving ports from clinet  "+ipPort)
 
-            socket.send_string('pull push socket ip have been received')
+            # socket.send_string('pull push socket ip have been received')
             
             downloadProcess = mp.Process(target=downloadFile, args=(
                 ipPort, DIR, fileName, message[3], message[4], message[5]))
