@@ -74,11 +74,11 @@ def uploadFile(ipPort, DIR, fileName,machineID):
     #getLogger().info(" start receiving the file  in dir = " +
     #             DIR+"  and file name is = " + fileName)
 
-    counter = 0
+    # counter = 0
     while True:
         chunk = pullSocket.recv()
-        print(counter)
-        counter = counter+1
+        # print(counter)
+        # counter = counter+1
         if chunk is b'':
             print('condition satisfied')
             getLogger().info(" IP:Port is %s:%s" % ipPort + " Finished upload from client")

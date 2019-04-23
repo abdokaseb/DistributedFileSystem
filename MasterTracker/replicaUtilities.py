@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 
-def fakeReplication(fakeUserID,fakeMachId,fileName):
+def fakeReplication(fakeUserID,realMachId,fileName):
     db = mysql.connector.connect(
         host=MASTER_TRAKER_HOST,
         user=MASTER_TRAKER_USER,
@@ -18,8 +18,7 @@ def fakeReplication(fakeUserID,fakeMachId,fileName):
     )
 
     dbcursour = db.cursor()
-    print("insert into files  values ({},{},'{}')".format(fakeUserID,fakeMachId,fileName))
-    insertFakeRecodQuery = "insert into files  values ({},{},'{}')".format(fakeUserID,fakeMachId,fileName)
+    insertFakeRecodQuery = "insert into files  values ({},{},'{}')".format(fakeUserID,realMachId,fileName)
     dbcursour.execute(insertFakeRecodQuery)
     print("insrted into database ... records {}".format(dbcursour.rowcount))
 
@@ -29,7 +28,7 @@ def releasePorts(srcMachine,dstMachine,availReplicaPorts):
     availReplicaPorts[srcMachine[0]], availReplicaPorts[dstMachine[0]]= a,b
 
 
-def removeReplication(fakeUserID,fakeMachId,fileName):
+def removeReplication(fakeUserID,realMachId,fileName):
     db = mysql.connector.connect(
         host=MASTER_TRAKER_HOST,
         user=MASTER_TRAKER_USER,
@@ -40,7 +39,7 @@ def removeReplication(fakeUserID,fakeMachId,fileName):
 
     dbcursour = db.cursor()
     removeFakeRecodQuery = "delete from files where fileName='{}' and UserID={} and machID={}"
-    removeFakeRecodQuery = removeFakeRecodQuery.format(fileName,fakeUserID,fakeMachId)
+    removeFakeRecodQuery = removeFakeRecodQuery.format(fileName,fakeUserID,realMachId)
     dbcursour.execute(removeFakeRecodQuery)
 
 
@@ -61,9 +60,7 @@ def getFilesToReplicate():
     dbcursour = db.cursor()
     countFilesReplicasQuery = "select fileName,count(*) as 'repCnt' from files group by(fileName) having repCnt < {}".format(minRepCnt)
     dbcursour.execute(countFilesReplicasQuery)
-    a = dbcursour.fetchall()
-    print(a)
-    return a
+    return dbcursour.fetchall()
 
 def fillAvailReplicaPorts(availReplicaPorts):
     existedIds = availReplicaPorts.keys()

@@ -13,7 +13,7 @@ def rcvTimOut(socket,timeNS):
         return socket.recv_string()
 
 
-def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPorts,fakeUserId,fakeMachId): 
+def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPorts,fakeUserId): 
     context = zmq.Context()
     socketSrc,socketDst = context.socket(zmq.REQ),context.socket(zmq.REQ)
     confirmSocket = context.socket(zmq.REP)
@@ -31,14 +31,14 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
             success = confirmSocket.recv_string()
             if(success == "success"):
                 confirmSocket.send_string('OK')
-            removeReplication(fakeUserId,fakeMachId,fileName)
+            removeReplication(fakeUserId,dstMach[0],fileName)
             releasePorts(srcMach,dstMach,availReplicaPorts)
     except Exception as e:
         socketDst.setsockopt(zmq.LINGER, 0)  #clear socket buffer
         socketSrc.setsockopt(zmq.LINGER, 0)
         socketDst.close()
         socketSrc.close()
-        removeReplication(fakeUserId,fakeMachId,fileName)
+        removeReplication(fakeUserId,dstMach[0],fileName)
         releasePorts(srcMach,dstMach,availReplicaPorts)
         getLogger().error("something went wrong on notifying machine "+str(e))
 
@@ -51,16 +51,20 @@ def getSrcDstMach(fileName,availReplicaPorts):
         database=MASTER_TRAKER_DATABASE,
         autocommit = True
     )
+
     dbcursour = db.cursor()
-    srcMachQuery = "select ID,INET_NTOA(IP),UserID from machines,files where isAlive = 1 and machID = ID and fileName ='{}'".format(fileName)
-    dstMachQuery = "select m.ID,INET_NTOA(m.IP) from machines m left join files f on m.ID = f.machID where m.isAlive = 1 and (fileName !='{}' OR fileName IS NULL)".format(fileName)
+    srcMachQuery = "select ID,INET_NTOA(IP),UserID from machines,files where isAlive = 1 and machID = ID and fileName ='{}' and UserID > 0".format(fileName)
+    dstMachQuery = "select ID,INET_NTOA(IP) from machines where isAlive =1 and ID not in (select distinct(machID) from files where fileName ='{}')".format(fileName)
     dbcursour.execute(srcMachQuery)
     srcMachines =  dbcursour.fetchall() 
+
     dbcursour.execute(dstMachQuery)
     dstMachines =  dbcursour.fetchall()
+    # print(srcMachines)
+    # print('----------------------------------------')
+    # print(dstMachines)
 
     #from random import choice
-
     srcMachine = dstMachine = None # the chosen ones
     for machId,machIP,userID in srcMachines:
         if(len(availReplicaPorts[machId])>0):
@@ -88,12 +92,16 @@ def getSrcDstMach(fileName,availReplicaPorts):
         raise(Exception())
 
 
-
 def replicate(availReplicaPorts):
     while True:
+        replicate.fakeUserId-=1
+        if(replicate.fakeUserId < -1000000000):
+            replicate.fakeUserId = -1
+
         fillAvailReplicaPorts(availReplicaPorts)
         filesToReplicate = getFilesToReplicate()
         if len(filesToReplicate):
+            print(filesToReplicate)
             getLogger().info("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
@@ -102,15 +110,16 @@ def replicate(availReplicaPorts):
             except Exception as e:
                 getLogger().error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
             else:
-                fakeUserId, fakeMachId = random.randint(-10000000,-1),random.randint(-10000000,-1) 
                 try:
-                    fakeReplication(fakeUserId,fakeMachId,fileName) # if uploading process take so long may be try to upload same file issued having more unccessary replication
-                    prc = mp.Process(target = notifyMachinesAndConfirmReplication,args=(srcMach,dstMach,fileName,availReplicaPorts,fakeUserId,fakeMachId)).start()
+                    fakeReplication(replicate.fakeUserId,dstMach[0],fileName) # if uploading process take so long may be try to upload same file issued having more unccessary replication
+                    prc = mp.Process(target = notifyMachinesAndConfirmReplication,args=(srcMach,dstMach,fileName,availReplicaPorts,replicate.fakeUserId)).start()
                 except Exception as e:
-                    removeReplication(fakeUserId,fakeMachId,fileName)
+                    removeReplication(replicate.fakeUserId,dstMach[0],fileName)
                     getLogger().error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base " + str(e))
-            time.sleep(3)
-        time.sleep(15)
+        time.sleep(3)
+
+replicate.fakeUserId = -1;
+
 
 if __name__ == "__main__": 
     # machines_files = [(10,8,'B.avi'),(11,3,'V.avi')]#,(3,'gello.txt'),(2,'cello.txt'),(1,'hello.txt'),(2,'hello.txt'),(10,'cello.txt')]

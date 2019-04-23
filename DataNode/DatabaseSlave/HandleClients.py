@@ -26,7 +26,6 @@ def communicate(port,IP):
     socket.bind("tcp://%s:%s" % (IP,port))
     getLogger().info("Database slave start to listen for clients in IP:Port {}:{} connection stablished correctly".format(IP,port))
     
-    print("bbbbbbbbbbbbbbbbbind  " + "tcp://%s:%s" % (IP,port))
     while True:
         message = socket.recv_string()
         try:

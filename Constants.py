@@ -8,7 +8,7 @@ USERACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1, 'LS': 2}
 MASTER_FILESYSTEM_MACHINE_IP = '192.168.1.9'
 
 ############ DATABASE
-MASTER_DATABASE_MACHINE_IP = '192.168.43.154'
+MASTER_DATABASE_MACHINE_IP = '192.168.1.9'
 N_DATABASE_SLAVES=5
 portsSlavesClient = list(range(13300,13307))
 portsdatabaseSlaves = list(range(13310,13310+N_DATABASE_SLAVES))
@@ -35,7 +35,7 @@ masterPortUploadSucess = "13321"
 masterHeartPort = "13322"
 
 ############### replica constanta
-MIN_REPLICA_COUNT = 2
+MIN_REPLICA_COUNT = 3
 
 MAX_NUMBER_MACHINES = 20
 
