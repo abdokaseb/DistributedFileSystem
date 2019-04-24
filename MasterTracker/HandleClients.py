@@ -7,8 +7,8 @@ import json
 import os
 import random
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from Constants import portsDatanodeClient, USERACTIONS, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
+import math
+from Constants import portsDatanodeClient, USERACTIONS, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE, numberOfPortsToDownload
 from Util import getLogger
 
 
@@ -87,30 +87,24 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
     machIPsRows = dbcursour.fetchall()
     if len(machIPsRows) == 0:
         return json.dumps("NO FILE WITH THIS NAME")
+
     random.shuffle(machIPsRows)
-    listConnections = []
-    for machIPRow in machIPsRows:
-        machIP = str(machIPRow[0])
-        print(machIP)
-        ports = portsAvailable[machIP]
+    if len(machIPsRows) >  numberOfPortsToDownload:
+        machIPsRows = machIPsRows[:7]
+    portsPertMach = math.ceil(numberOfPortsToDownload/len(machIPsRows)) 
+    connectionList = []
+    for row in machIPsRows:
+        machIP = row[0]
+        ports = portsAvailable[machIP] 
         random.shuffle(ports)
-        for port in ports:
-            # a = portsAvailable[machIP]
-            # a.remove(port)
-            # portsAvailable[machIP] = a
-            listConnections.append('{}:{}'.format(machIP,port))
-            if len(listConnections) == 6:
-                return json.dumps(listConnections)
-            # continue or not depend mainly on is it okay to have more than one port in the same machine ?
-            # continue
+        connectionList.extend(["{}:{}".format(machIP,ports[i]) for i in range(portsPertMach)])
+    
+    random.shuffle(connectionList)
+    connectionList[:numberOfPortsToDownload]
+    if len(connectionList)==numberOfPortsToDownload:
+        return json.dumps(connectionList)
     print("Sorry We Are Very Busy")
 
-    # a = [connection.split() for connection in listConnections]
-    # for connection in listConnections:
-    #     IP, port = connection.split(':')
-    #     a = portsAvailable[IP] 
-    #     a.append(port)
-    #     portsAvailable[IP] = a
     return json.dumps("ERROR 404")
 
     #return json.dumps(['172.28.178.37:6001', '172.28.178.37:6002', '172.28.178.37:6003', '172.28.178.37:6004', '172.28.178.37:6005', '172.28.178.37:6006', '172.28.178.37:6007'])
