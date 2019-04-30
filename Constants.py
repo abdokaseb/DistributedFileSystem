@@ -5,10 +5,10 @@ DIR = "./DataNode/videos/"
 CHUNK_SIZE = 500
 USERACTIONS = {'UPLOAD': 0, 'DOWNLOAD': 1, 'LS': 2}
 
-MASTER_FILESYSTEM_MACHINE_IP = '192.168.1.12'
+MASTER_FILESYSTEM_MACHINE_IP = '172.28.183.167'
 
 ############ DATABASE
-MASTER_DATABASE_MACHINE_IP = '192.168.1.12'
+MASTER_DATABASE_MACHINE_IP = '172.28.183.167'
 N_DATABASE_SLAVES=5
 portsSlavesClient = list(range(13300,13307))
 portsdatabaseSlaves = list(range(13310,13310+N_DATABASE_SLAVES))
@@ -41,8 +41,10 @@ MAX_NUMBER_MACHINES = 20
 
 ###### used as constant in client to access master to send request ( ls ,upload ,download)
 numberOfPortsToDownload = 7
+clientDownloadPortsMin = 13420
+clientDownloadPortsMax = 13620
 masterClientPorts = list(range(13330,13337))
-clientDownloadPorts = list(range(13340,13340+numberOfPortsToDownload))
+# clientDownloadPorts = list(range(13340,13340+numberOfPortsToDownload))
 portsHandleClentsToSlaves = list(range(13350,13357))
 portsdatabaseClients = list(range(13360,13367))
 

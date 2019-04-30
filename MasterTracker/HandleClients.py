@@ -100,7 +100,8 @@ def downloadFile(userID,filename,dbcursour,portsAvailable):
         connectionList.extend(["{}:{}".format(machIP,ports[i]) for i in range(portsPertMach)])
     
     random.shuffle(connectionList)
-    connectionList[:numberOfPortsToDownload]
+    connectionList = connectionList[:numberOfPortsToDownload]
+    # print(connectionList)
     if len(connectionList)==numberOfPortsToDownload:
         return json.dumps(connectionList)
     print("Sorry We Are Very Busy")

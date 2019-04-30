@@ -5,9 +5,10 @@ import multiprocessing as mp
 import os
 import threading as th
 import random
+import time
 sys.path.append("../")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MASTER_DATABASE_MACHINE_IP, clientDownloadPorts, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts
+from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MASTER_DATABASE_MACHINE_IP, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts, clientDownloadPortsMax, clientDownloadPortsMin
 #getLogger().info("asdasdasdasd")
 sys.path.insert(0,"../MasterTracker/")
 
@@ -20,8 +21,12 @@ def userInput(socket):
     ContinueCheck="2"
     Function=""
     #print("Welcome, Please press 1 to sign in or 2 to sign up with a new account")
-    while(UserID =="-2" and ContinueCheck=="2"):
-        print("Please press 1 to sign in or 2 to sign up with a new account")    
+    while(True):
+        print("Please, Press No. of function you want:")
+        print("Press 1 to Sign IN")
+        print("Press 2 to Sign UP")
+        print("Any thing else with exit")
+
         DatbaseInput=input()
         if(DatbaseInput=="1"):
             print("Please Enter Your User Name")
@@ -35,8 +40,10 @@ def userInput(socket):
             getLogger().info("call sign in with username {}, password {} and get user ID equals {}".format(UserName,Password,UserID))
             if(UserID== "-2"):
                 print("Worng username and password")
-                print("Press 1 to End process or 2 to enter again")
-                ContinueCheck=input()
+                # print("Press 1 to End process or 2 to enter again")
+                # ContinueCheck=input()
+            else:
+                break
         elif (DatbaseInput=="2"):
             print("Please Enter an E-mail Address")
             EmailAddress= input()
@@ -47,16 +54,20 @@ def userInput(socket):
 
             getLogger().info("call sign up with username {}, password {}, email {}".format(userName,Password,EmailAddress))
             #Kaseb Function Call to insert user in the database and ID Update
-            UserID=SignUp(MASTER_FILESYSTEM_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) 
+            UserID=SignUp(MASTER_DATABASE_MACHINE_IP,masterClientPorts,userName,EmailAddress,Password) 
             getLogger().info("call sign up with username {}, password {}, email {} and get user ID equals {}".format(userName,Password,EmailAddress,UserID))
             if(UserID=="-2"):
                 print("Can't Sign Up, Email is already in use")
-                print("Press 1 to End process or 2 to enter again")
-                ContinueCheck=input()
+                # print("Press 1 to End process or 2 to enter again")
+                # ContinueCheck=input()
+            else:
+                break
+        else:
+            sys.exit()
     
     getLogger().info("user ID {}, ContinueCheck {}".format(UserID,ContinueCheck))
-    if(ContinueCheck=="1"):
-        sys.exit()
+    # if(ContinueCheck=="2"):
+        
     check="1"
     functionCheck=""
     FileName=""
@@ -273,29 +284,24 @@ def downloadPart(port,userAction,userId,DIR,fileName,partNum,chunkSize,numberOfP
     context = zmq.Context()
     opSocket = context.socket(zmq.REQ)
     opSocket.connect('tcp://'+port)
+    
+    pullSocket = context.socket(zmq.PULL)
+    pullSocket.hwm = 10
+    port_selected = pullSocket.bind_to_random_port('tcp://*', min_port=clientDownloadPortsMin, max_port=clientDownloadPortsMax, max_tries=200)
+
     opSocket.send_string("{} {} {} {} {} {} {}".format(
-        userAction, userId, fileName, partNum, chunkSize, numberOfPorts, getMyIP()+":"+str(clientDownloadPorts[partNum])))
+        userAction, userId, fileName, partNum, chunkSize, numberOfPorts, getMyIP()+":"+str(port_selected)))
     print("type of  operation and user and file and chunkazes name have been send")
     message = opSocket.recv_string()
     print(message)
    
-
-    # opSocket.send_string()
     print("send ip push pull to datanode port")
-    # message = opSocket.recv_string()
-    # print(message)
-    pullSocket = context.socket(zmq.PULL)
-    pullSocket.hwm = 10
-    pullSocket.bind("tcp://"+getMyIP()+":"+str(clientDownloadPorts[partNum]))
 
     fileobj = open(DIR+str(userId)+"_"+str(partNum)+"_"+fileName, 'wb+')
     while True:
         chunk = pullSocket.recv()
-        print("asdadasdasdassss")
-        #print('data received in '+str(partNum))
-        #counter = counter+1
         if chunk is b'':
-            print('condition satisfied')
+            print('Download condition satisfied')
             break
         fileobj.write(chunk)
 
@@ -307,7 +313,7 @@ def SignUp(socket,Port,userName,Email,Password):
     getLogger().info(Email)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
-    [socket.connect("tcp://%s:%s" % (MASTER_FILESYSTEM_MACHINE_IP,port)) for port in portsdatabaseClients]
+    [socket.connect("tcp://%s:%s" % (MASTER_DATABASE_MACHINE_IP,port)) for port in portsdatabaseClients]
     getLogger().info(userName)
     getLogger().info(Email)
 

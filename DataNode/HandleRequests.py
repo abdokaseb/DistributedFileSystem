@@ -100,7 +100,6 @@ def uploadFile(ipPort, DIR, fileName,machineID):
 def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
     getLogger().info("IP:Port {} in client start downloading file name is {}".format(ipPort,fileName))
     ## receive download port from the client and connect to it
-
     context = zmq.Context()
     pushSocket = context.socket(zmq.PUSH)
     print(ipPort)
@@ -117,7 +116,7 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
         size = f.tell()
         size = int(size/int(numberOfParts))
         f.seek(int(partNum)*size, 0)
-        if partNum != int(numberOfParts)-1:
+        if int(partNum) != int(numberOfParts)-1:
             for i in range(math.floor(size/int(chunkSize))):
                 chunk = f.read(int(chunkSize))
                 pushSocket.send(chunk)
