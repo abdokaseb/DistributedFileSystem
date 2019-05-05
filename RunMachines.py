@@ -4,13 +4,13 @@ import os
 try:
     typeRun = sys.argv[1]
     if typeRun == 'Client':
-        os.system("export PYTHONUNBUFFERED=1;python3 Client/AccessFS.py")
+        os.system("python3 Client/AccessFS.py")
     elif typeRun == 'MasterTracker':
         os.system("python3 MasterTracker/lookUpTableInit.py")
         os.system("export PYTHONUNBUFFERED=1;python3 MasterTracker/MasterMachine.py > ./logs/MasterTracker.log")
     elif typeRun == 'DataNode': 
         machineID = sys.argv[2]
-        os.system("python3 DataNode/DataNode.py {0} > ./logs/DataNode{0}.log".format(machineID))
+        os.system("export PYTHONUNBUFFERED=1;python3 DataNode/DataNode.py {0} > ./logs/DataNode{0}.log".format(machineID))
     elif typeRun == 'DatabaseMaster':
         os.system("python3 MasterTracker/DatabaseMaster/TableInit.py")
         os.system("export PYTHONUNBUFFERED=1;python3 MasterTracker/DatabaseMaster/DatabaseMaster.py > ./logs/DatabaseMaster.log")
