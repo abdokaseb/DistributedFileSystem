@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 from aliveDatabaseSlave import sendHeartBeat
 from HandleClients import communicate as CComm
 from HandleMaster import communicate as MCom
-from Constants import portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP,portsSlavesClient
+from Constants import portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves, MASTER_DATABASE_MACHINE_IP,portsSlavesClient, DNS_MACHINE_IP
 from Util import getMyIP
 
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
 
     aliveProcess = mp.Process(target=sendHeartBeat, args=(
-        1, MASTER_DATABASE_MACHINE_IP, DatabaseportToListenSlaves,machineIP))
+        1, DNS_MACHINE_IP, DatabaseportToListenSlaves,machineIP))
     aliveProcess.start()
 
     masterProcess = mp.Process(target=MCom, args=(

@@ -10,7 +10,7 @@ import logging
 sys.path.append("../")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0,"../MasterTracker/")
-from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MASTER_DATABASE_MACHINE_IP, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts, clientDownloadPortsMax, clientDownloadPortsMin
+from Constants import MASTER_FILESYSTEM_MACHINE_IP, CHUNK_SIZE, USERACTIONS, MASTER_DATABASE_MACHINE_IP, portsHandleClentsToSlaves, portsdatabaseClients, clientUploadIpPort, masterClientPorts, clientDownloadPortsMax, clientDownloadPortsMin, DNS_MACHINE_IP
 from Util import getMyIP
 
  
@@ -35,7 +35,7 @@ def userInput(socket):
 
             logging.info("call sign in with username {}, password {}".format(UserName,Password))
             #Kasep Function Call to check the User Data Using Slaves and ID Update
-            UserID=requestDatabaseSlave(MASTER_DATABASE_MACHINE_IP,portsHandleClentsToSlaves,UserName,Password)
+            UserID=requestDatabaseSlave(DNS_MACHINE_IP,portsHandleClentsToSlaves,UserName,Password)
             logging.info("call sign in with username {}, password {} and get user ID equals {}".format(UserName,Password,UserID))
             if(UserID== "-2"):
                 print("Worng username and password")
