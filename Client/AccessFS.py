@@ -198,10 +198,10 @@ def Download(DataNodePorts, DIR, fileName, userID, userAction):
     with  open(DIR+fileName, 'wb+') as fileobj :
         for i in range(len(DataNodePorts)):
             with open(DIR+str(userID)+"_" +str(i)+"_"+fileName, 'rb+') as partFile:
-                chunk=partFile.read(1024)
+                chunk = partFile.read(1048576)
                 while chunk:
                     fileobj.write(chunk)
-                    chunk = partFile.read(1024)
+                    chunk = partFile.read(1048576)
 
     for i in range(len(DataNodePorts)):
         os.remove(DIR+str(userID)+"_" +str(i)+"_"+fileName)
