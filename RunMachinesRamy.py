@@ -14,9 +14,12 @@ try:
         os.system(
             "C:/Users/ramym/Anaconda3/python.exe DataNode/DataNode.py {0} > ./logs/DataNode{0}.log".format(machineID))
     elif typeRun == 'DatabaseMaster':
-        os.system("C:/Users/ramym/Anaconda3/python.exe MasterTracker/DatabaseMaster/TableInit.py")
+        withDNS = 1
+        if len(sys.argv) > 2:
+            withDNS = sys.argv[2]
         os.system(
-            "set PYTHONUNBUFFERED=1&C:/Users/ramym/Anaconda3/python.exe MasterTracker/DatabaseMaster/DatabaseMaster.py > ./logs/DatabaseMaster.log")
+            "C:/Users/ramym/Anaconda3/python.exe MasterTracker/DatabaseMaster/TableInit.py")
+        os.system("set PYTHONUNBUFFERED=1&C:/Users/ramym/Anaconda3/python.exe MasterTracker/DatabaseMaster/DatabaseMaster.py {} > ./logs/DatabaseMaster.log".format(withDNS))
     elif typeRun == 'DatabaseSlave':
         machineID = sys.argv[2]
         os.system("C:/Users/ramym/Anaconda3/python.exe DataNode/DatabaseSlave/TableInit.py")
