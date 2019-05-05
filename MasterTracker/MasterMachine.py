@@ -47,8 +47,8 @@ if __name__ == "__main__":
 
     manager = mp.Manager()
     portsAvailable = manager.dict()
-    testProcess = mp.Process(target=test,args=(portsAvailable,))
-    testProcess.start()
+    # testProcess = mp.Process(target=test,args=(portsAvailable,))
+    # testProcess.start()
 
     aliveProcess = mp.Process(target=recevHeartBeat,args=(portsAvailable,machineIP,masterHeartPort,machinesIDs))
     aliveProcess.start()
