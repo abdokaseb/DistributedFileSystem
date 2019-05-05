@@ -4,20 +4,25 @@ import os
 try:
     typeRun = sys.argv[1]
     if typeRun == 'Client':
-        os.system("export PYTHONUNBUFFERED=1;python3 Client/AccessFS.py")
+        os.system("python3 Client/AccessFS.py")
     elif typeRun == 'MasterTracker':
         os.system("python3 MasterTracker/lookUpTableInit.py")
         os.system("export PYTHONUNBUFFERED=1;python3 MasterTracker/MasterMachine.py > ./logs/MasterTracker.log")
     elif typeRun == 'DataNode': 
         machineID = sys.argv[2]
-        os.system("python3 DataNode/DataNode.py {0} > ./logs/DataNode{0}.log".format(machineID))
+        os.system("export PYTHONUNBUFFERED=1;python3 DataNode/DataNode.py {0} > ./logs/DataNode{0}.log".format(machineID))
     elif typeRun == 'DatabaseMaster':
+        withDNS = 1
+        if len(sys.argv) >2:
+            withDNS = sys.argv[2]
         os.system("python3 MasterTracker/DatabaseMaster/TableInit.py")
-        os.system("export PYTHONUNBUFFERED=1;python3 MasterTracker/DatabaseMaster/DatabaseMaster.py > ./logs/DatabaseMaster.log")
+        os.system("export PYTHONUNBUFFERED=1;python3 MasterTracker/DatabaseMaster/DatabaseMaster.py {} > ./logs/DatabaseMaster.log".format(withDNS))
     elif typeRun == 'DatabaseSlave':
         machineID = sys.argv[2]
         os.system("python3 DataNode/DatabaseSlave/TableInit.py")
         os.system("export PYTHONUNBUFFERED=1;python3 DataNode/DatabaseSlave/DatabaseSlave.py {0} > ./logs/DatabaseSlave{0}.log".format(machineID))
+    elif typeRun == 'DNS':
+        os.system("export PYTHONUNBUFFERED=1; python3 MasterTracker/DatabaseMaster/DNS.py > ./logs/DNS.log")
     else:
         raise ValueError('error in arguments')
 except:
