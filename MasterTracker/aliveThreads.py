@@ -7,7 +7,7 @@ import copy
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Constants import portsDatanodeClient, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
-from Util import getMyIP,getLogger
+from Util import getMyIP
 
 
 machineIP = getMyIP()
@@ -42,14 +42,14 @@ def checkLive(portsAvailable,timeStam,topics):
                     Alive[int(key)] = 0
                     dbcursour.execute(dieSQL,(key,))
                     # mydb.commit()
-                    getLogger().info("DataNode with ID={} and IP={} dead".format(key,recvIP))
+                    print("DataNode with ID={} and IP={} dead".format(key,recvIP))
                     print("DataNode with ID={} and IP={} dead".format(key,recvIP))
                     portsAvailable[recvIP] = []
                     
                     
             else:
                 if Alive[int(key)] == 0:
-                    getLogger().info("DataNode with ID={} and IP={} is alive".format(key,recvIP))
+                    print("DataNode with ID={} and IP={} is alive".format(key,recvIP))
                     print("DataNode with ID={} and IP={} is alive".format(key,recvIP))
                     Alive[int(key)] = 1
                     dbcursour.execute(lifeSQL,(recvIP,key))
@@ -61,7 +61,7 @@ def checkLive(portsAvailable,timeStam,topics):
                 s[1] = 0
 
 def recevHeartBeat(portsAvailable,rootIP, port,IDs):
-    getLogger().info("Alive Process started to listen Datanodes on IP:Port {}:{}".format(rootIP,port))
+    print("Alive Process started to listen Datanodes on IP:Port {}:{}".format(rootIP,port))
     # Socket to talk to server
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
@@ -77,7 +77,7 @@ def recevHeartBeat(portsAvailable,rootIP, port,IDs):
 
     while True:
         topic, recvIP = socket.recv_string().split()
-        # getLogger().info("alive from IP={}".format(recvIP))
+        # print("alive from IP={}".format(recvIP))
         timeStam[topic][0] += 1
         timeStam[topic][1] = recvIP
 

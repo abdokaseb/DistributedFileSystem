@@ -13,7 +13,7 @@ from replicaProcces import replicate as replicateFunc
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Constants import masterClientPorts, masterHeartPort, portsDatanodeClient, portsDatanodeDatanode, masterPortUploadSucess, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
-from Util import getMyIP,getLogger,setLoggingFile
+from Util import getMyIP
 
 
 
@@ -40,9 +40,8 @@ def readMachinesIDs():
     return  [str(id[0]) for id in idsRows]
 
 if __name__ == "__main__":
-    setLoggingFile("MasterTracker.log")
     machineIP = getMyIP()
-    getLogger().info("Master Tracker started with machine IP = {}".format(machineIP))
+    print("Master Tracker started with machine IP = {}".format(machineIP))
     # print(machineIP)
     machinesIDs = readMachinesIDs()
 

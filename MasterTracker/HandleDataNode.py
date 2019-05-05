@@ -7,7 +7,7 @@ import copy
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Constants import portsDatanodeClient, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE
-from Util import getMyIP, getLogger
+from Util import getMyIP
 
 
 machineIP = getMyIP()
@@ -48,7 +48,7 @@ def success(portsAvailable,rootIP, port):
         portsAvailable[rows[0][0]] = a
 
 def uploadSucess (rootIP, port):
-    getLogger().info("uploadSucess IP:Port {}:{} started".format(rootIP,port))
+    print("uploadSucess IP:Port {}:{} started".format(rootIP,port))
     mydb = mysql.connector.connect(
         host=MASTER_TRAKER_HOST,
         user=MASTER_TRAKER_USER,
@@ -65,9 +65,9 @@ def uploadSucess (rootIP, port):
     SQL = "INSERT INTO files (UserID, machID, fileName) VALUES (%s,%s,%s)"
     while True:
         UserID, mcahID, fileName = socket.recv_string().split()
-        getLogger().info("Uploded sucessfully: UserID={}, machID={}, fileName={} ".format(UserID, mcahID, fileName))
+        print("Uploded sucessfully: UserID={}, machID={}, fileName={} ".format(UserID, mcahID, fileName))
         dbcursour.execute(SQL,(UserID, mcahID, fileName))
-        getLogger().info("Uploded sucessfully Added to database: UserID={}, machID={}, fileName={} ".format(UserID, mcahID, fileName))
+        print("Uploded sucessfully Added to database: UserID={}, machID={}, fileName={} ".format(UserID, mcahID, fileName))
         socket.send_string("1")
 
 if __name__ == "__main__": 

@@ -11,11 +11,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import math
 from Constants import USERACTIONS as ACTIONS,MASTER_FILESYSTEM_MACHINE_IP,masterPortUploadSucess
-from Util import getMyIP,getLogger
+from Util import getMyIP
 from doneWork import uploadSucess
 
 def communicate(port,DIR,machineIP,machineID):
-    getLogger().info("IP:Port {}:{} to responed requests from the clients".format(machineIP,port))
+    print("IP:Port {}:{} to responed requests from the clients".format(machineIP,port))
     # print("inside process "+port)
 
     context = zmq.Context()
@@ -27,7 +27,7 @@ def communicate(port,DIR,machineIP,machineID):
         # print(message)
         fileName = message[1] + '_' + message[2]
         action = ACTIONS[message[0]]
-        getLogger().info("Port {} receive from client -> action is {}, file name is {}".format(port,action,fileName))
+        print("Port {} receive from client -> action is {}, file name is {}".format(port,action,fileName))
         # print(port)
         socket.send_string(
             "client operation info and user Id and have been reveived")
@@ -37,7 +37,7 @@ def communicate(port,DIR,machineIP,machineID):
             # receive client upload port
             # ipPort = tuple(socket.recv_string().split(':'))
             ipPort = tuple(message[3].split(':'))
-            #getLogger().info(" after receiving ports from clinet  " +
+            #print(" after receiving ports from clinet  " +
             #             " %s : %s " % ipPort)
             print("afterrrrrrrrrrrr seeeend")
             # socket.send_string('pull push socket ip have been received')            
@@ -48,7 +48,7 @@ def communicate(port,DIR,machineIP,machineID):
         elif action == ACTIONS['DOWNLOAD']:
             # ipPort = socket.recv_string()
             ipPort = message[6]
-            #getLogger().info(" after receiving ports from clinet  "+ipPort)
+            #print(" after receiving ports from clinet  "+ipPort)
 
             # socket.send_string('pull push socket ip have been received')
             
@@ -59,19 +59,19 @@ def communicate(port,DIR,machineIP,machineID):
 
 
 def uploadFile(ipPort, DIR, fileName,machineID):
-    getLogger().info("IP:Port {} in client start uploading file name is {}".format(ipPort,fileName))
+    print("IP:Port {} in client start uploading file name is {}".format(ipPort,fileName))
     context = zmq.Context()
     pullSocket = context.socket(zmq.PULL)
     pullSocket.hwm = 10
     pullSocket.connect("tcp://%s:%s" % ipPort)
 
-    getLogger().info(" Successful connect to the pull socket for upload and IP:Port is %s:%s" % ipPort)
+    print(" Successful connect to the pull socket for upload and IP:Port is %s:%s" % ipPort)
     print(
         " Successful connect to the pull socket and port is  "+"%s:%s" % ipPort)
 
     fileobj = open(DIR+fileName, 'wb+')
 
-    #getLogger().info(" start receiving the file  in dir = " +
+    #print(" start receiving the file  in dir = " +
     #             DIR+"  and file name is = " + fileName)
 
     # counter = 0
@@ -81,14 +81,14 @@ def uploadFile(ipPort, DIR, fileName,machineID):
         # counter = counter+1
         if chunk is b'':
             print('condition satisfied')
-            getLogger().info(" IP:Port is %s:%s" % ipPort + " Finished upload from client")
+            print(" IP:Port is %s:%s" % ipPort + " Finished upload from client")
             break
         fileobj.write(chunk)
 
     fileobj.close()
     pullSocket.close()
 
-    #getLogger().info(" after finished upload the file  ")
+    #print(" after finished upload the file  ")
 
     ######################3
     ####### here we will norify the tracker
@@ -98,17 +98,17 @@ def uploadFile(ipPort, DIR, fileName,machineID):
 
 
 def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
-    getLogger().info("IP:Port {} in client start downloading file name is {}".format(ipPort,fileName))
+    print("IP:Port {} in client start downloading file name is {}".format(ipPort,fileName))
     ## receive download port from the client and connect to it
     context = zmq.Context()
     pushSocket = context.socket(zmq.PUSH)
     print(ipPort)
     pushSocket.connect("tcp://"+ipPort)
-    getLogger().info(" Successful connect to the pull socket for download and IP:Port is %s" % ipPort)
+    print(" Successful connect to the pull socket for download and IP:Port is %s" % ipPort)
 
-    #getLogger().info(" after connectiong  to the push socket  ")
+    #print(" after connectiong  to the push socket  ")
 
-    #getLogger().info(" file parameters     file in  " + DIR + "  " +
+    #print(" file parameters     file in  " + DIR + "  " +
     #             fileName+"  part number ="+partNum+"  chunkSize = "+chunkSize + " totla number of parts ="+numberOfParts)
 
     with open(DIR+fileName, "rb") as f:
@@ -135,9 +135,9 @@ def downloadFile(ipPort, DIR, fileName, partNum, chunkSize, numberOfParts):
     pushSocket.send(b'')
     print("finish Send")
     time.sleep(3)
-    #getLogger().info("IP:Port is %s" % ipPort + " Finished download to client")
+    #print("IP:Port is %s" % ipPort + " Finished download to client")
 
-    #getLogger().info(" end download with partnumber = "+partNum)
+    #print(" end download with partnumber = "+partNum)
 
     ######################3
     ####### here we will norify the tracker

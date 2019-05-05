@@ -10,12 +10,12 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsDatanodeClient, MASTER_DATABASE_HOST, MASTER_DATABASE_USER, MASTER_DATABASE_PASSWORD, MASTER_DATABASE_DATABASE
-from Util import getLogger,getMyIP
+from Util import getMyIP
 
 
 
 def communicate(port,qSQLs):
-    getLogger().info("Port {} is lisening for clients to add new users".format(port))
+    print("Port {} is lisening for clients to add new users".format(port))
     mydb = mysql.connector.connect(
         host= MASTER_DATABASE_HOST,
         user= MASTER_DATABASE_USER,
@@ -32,7 +32,7 @@ def communicate(port,qSQLs):
     while True:
         userName,Email,Password = socket.recv_string().split(' ')
         try:
-            # getLogger().info("Port {}, client need to signup, username={} email={}".format(port,userName,Email))
+            # print("Port {}, client need to signup, username={} email={}".format(port,userName,Email))
             insertMasterSql="INSERT INTO Users (UserName, Email, Pass) VALUES ('{}','{}',SHA('{}'));".format(userName,Email,Password)
             dbcursour.execute(insertMasterSql)
             retriveSql="SELECT UserID from Users where UserName='{}' and Email='{}' and Pass=SHA('{}')".format(userName,Email,Password)
@@ -41,9 +41,9 @@ def communicate(port,qSQLs):
             insertSlaveSql="INSERT INTO Users (UserID, UserName, Email, Pass) VALUES ('{}','{}','{}',SHA('{}'));".format(userID,userName,Email,Password)
             qSQLs.put(insertSlaveSql)
             socket.send_string("{}".format(userID))
-            # getLogger().info("inserted into user databse, and send to slaves UserID={}, UserName={}, Email={}".format(userID,userName,Email))
+            # print("inserted into user databse, and send to slaves UserID={}, UserName={}, Email={}".format(userID,userName,Email))
         except Exception as e:
-            # getLogger().info("Port {}, client need to signup but can't signup, username={} email={} password={} error is {}".format(port,userName,Email,Password,e.message))
+            # print("Port {}, client need to signup but can't signup, username={} email={} password={} error is {}".format(port,userName,Email,Password,e.message))
             socket.send_string("-2")
 
 if __name__ == '__main__':

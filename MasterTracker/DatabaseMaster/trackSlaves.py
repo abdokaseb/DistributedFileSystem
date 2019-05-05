@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsSlavesClient, N_DATABASE_SLAVES
-from Util import getMyIP,getLogger
+from Util import getMyIP
 
 machineIP = getMyIP()
 
@@ -26,14 +26,12 @@ def checkLive(portsAvailable,timeStam):
                     s[1] += 1
                     if s[1] > 2 and Alive[recvIP] != 0:
                         Alive[recvIP] = 0
-                        getLogger().info("Database Slaves with IP={} dead".format(recvIP))
                         print("Database Slaves with IP={} dead".format(recvIP))
                         portsAvailable[recvIP] = []
                         
                         
                 else:
                     if Alive[recvIP] == 0:
-                        getLogger().info("Database Slaves with and IP={} is alive".format(recvIP))
                         print("Database Slaves with and IP={} is alive".format(recvIP))
                         Alive[recvIP] = 1
                         portsAvailable[recvIP] = portsSlavesClient
@@ -46,7 +44,7 @@ def checkLive(portsAvailable,timeStam):
                 portsAvailable[recvIP] = portsSlavesClient
 
 def recevHeartBeat(portsAvailable,rootIP, port):
-    getLogger().info("Database Master start track herat beat at IP:Port {}:{}".format(rootIP,port))
+    print("Database Master start track herat beat at IP:Port {}:{}".format(rootIP,port))
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
     socket.bind ("tcp://%s:%s" % (rootIP, port))

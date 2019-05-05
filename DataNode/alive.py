@@ -6,14 +6,14 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Util import getMyIP,getLogger
+from Util import getMyIP
 
 machineID = int(sys.argv[1])
 
 machineIP = getMyIP()
 
 def sendHeartBeat(machineID,rootIP = "192.168.1.9",port = "5556"):
-    getLogger().info("Start to send heart beat, connecting to IP:Port {}:{}".format(rootIP,port))
+    print("Start to send heart beat, connecting to IP:Port {}:{}".format(rootIP,port))
     topic = machineID
 
     context = zmq.Context()
@@ -25,7 +25,7 @@ def sendHeartBeat(machineID,rootIP = "192.168.1.9",port = "5556"):
     while True:
         socket.send_string("%d %s" % (topic, machineIP))
         time.sleep(1)
-    getLogger().error("sending heart beat finished")
+    print("sending heart beat finished")
 
 if __name__ == "__main__": 
     if len(sys.argv)>=3:

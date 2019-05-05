@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from Constants import portsHandleClentsToSlaves, portsdatabaseClients, portsdatabaseSlaves, DatabaseportToListenSlaves
-from Util import getMyIP,setLoggingFile,getLogger
+from Util import getMyIP
 
 def test(portsAvailable):
     print("start Test")
@@ -22,9 +22,8 @@ def test(portsAvailable):
         time.sleep(1)
 
 if __name__ == "__main__":
-    setLoggingFile("DatabaseMaster.log")
     machineIP = getMyIP()
-    getLogger().info("Start Database master logging with machine IP={}".format(machineIP))
+    print("Start Database master logging with machine IP={}".format(machineIP))
     manager = mp.Manager()
     sqlQueue = manager.Queue()
     distributorProcess = mp.Process(target=distributorF,args=(sqlQueue,portsdatabaseSlaves))

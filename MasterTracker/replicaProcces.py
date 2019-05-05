@@ -1,7 +1,7 @@
 from replicaUtilities import *
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Util import getMyIP,getLogger
+from Util import getMyIP
 
 def rcvTimOut(socket,timeNS):
     poller = zmq.Poller()
@@ -40,7 +40,7 @@ def notifyMachinesAndConfirmReplication(srcMach,dstMach,fileName,availReplicaPor
         socketSrc.close()
         removeReplication(fakeUserId,dstMach[0],fileName)
         releasePorts(srcMach,dstMach,availReplicaPorts)
-        getLogger().error("something went wrong on notifying machine "+str(e))
+        print("ERROR: something went wrong on notifying machine "+str(e))
 
 
 def getSrcDstMach(fileName,availReplicaPorts):
@@ -102,20 +102,20 @@ def replicate(availReplicaPorts):
         filesToReplicate = getFilesToReplicate()
         if len(filesToReplicate):
             print(filesToReplicate)
-            getLogger().info("Files to replicate {}".format(filesToReplicate))
+            print("Files to replicate {}".format(filesToReplicate))
         for fileName,_ in filesToReplicate:
             try:
                 srcMach,dstMach = getSrcDstMach(fileName,availReplicaPorts)
-                getLogger().info("file, src_machine ,dst_machine: {} , {}, {}".format(fileName,srcMach,dstMach))
+                print("file, src_machine ,dst_machine: {} , {}, {}".format(fileName,srcMach,dstMach))
             except Exception as e:
-                getLogger().error("can't find avaliabe src or distnation machine for file "+fileName+ str(e))
+                print("ERROR: can't find avaliabe src or distnation machine for file "+fileName+ str(e))
             else:
                 try:
                     fakeReplication(replicate.fakeUserId,dstMach[0],fileName) # if uploading process take so long may be try to upload same file issued having more unccessary replication
                     prc = mp.Process(target = notifyMachinesAndConfirmReplication,args=(srcMach,dstMach,fileName,availReplicaPorts,replicate.fakeUserId)).start()
                 except Exception as e:
                     removeReplication(replicate.fakeUserId,dstMach[0],fileName)
-                    getLogger().error("something went wrong on no creating notifying machine proccess or inserting fake repliction in data base " + str(e))
+                    print("ERROR: something went wrong on no creating notifying machine proccess or inserting fake repliction in data base " + str(e))
         time.sleep(3)
 
 replicate.fakeUserId = -1;

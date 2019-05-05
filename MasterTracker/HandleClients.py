@@ -9,7 +9,6 @@ import random
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import math
 from Constants import portsDatanodeClient, USERACTIONS, MASTER_TRAKER_HOST, MASTER_TRAKER_USER, MASTER_TRAKER_PASSWORD, MASTER_TRAKER_DATABASE, numberOfPortsToDownload
-from Util import getLogger
 
 
 #USERACTIONS = {'UPLOAD':0,'DOWNLOAD':1,'LS':2}
@@ -27,7 +26,7 @@ def communicate(portsAvailable,rootIP,port):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://%s:%s" % (rootIP,port))
-    getLogger().info("Start listen to clients at IP:Port {}:{}".format(rootIP,port))
+    print("Start listen to clients at IP:Port {}:{}".format(rootIP,port))
     # socket.setsockopt(zmq.LINGER,0)
     # socket.close()
     # context = zmq.Context()
@@ -40,7 +39,7 @@ def communicate(portsAvailable,rootIP,port):
         #  Wait for next request from client
         message = socket.recv_string().split()
         print(message)
-        # getLogger().info("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],USERACTIONS[int(message[1])]))
+        # print("Port {} recive request from client with id={} need instrunction {}".format(port,message[0],USERACTIONS[int(message[1])]))
         print(message)
         if int(message[1]) == USERACTIONS['LS']:
             result = listFiles(message[0],dbcursour)
@@ -51,7 +50,7 @@ def communicate(portsAvailable,rootIP,port):
         elif int(message[1]) == USERACTIONS['DOWNLOAD']:
             result = downloadFile(message[0],message[2],dbcursour,portsAvailable)
             socket.send_json(result)
-        # getLogger().info("Port {} replied to client with id={} for instunction {} with result = {}".format(port,message[0],USERACTIONS[int(message[1])],result))
+        # print("Port {} replied to client with id={} for instunction {} with result = {}".format(port,message[0],USERACTIONS[int(message[1])],result))
         
 
 def listFiles(userID,dbcursour):

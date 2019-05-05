@@ -4,7 +4,6 @@ import sys
 import multiprocessing as mp
 import mysql.connector
 import json
-from Util import getLogger
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -12,7 +11,7 @@ from Constants import SLAVE_DATABASE_HOST,SLAVE_DATABASE_USER,SLAVE_DATABASE_PAS
 
 
 def communicate(port,masterIP):
-    getLogger().info("Database Slave start to take new users from the master, IP:Port {}:{}".format(masterIP,port))
+    print("Database Slave start to take new users from the master, IP:Port {}:{}".format(masterIP,port))
     mydb = mysql.connector.connect(
         host=SLAVE_DATABASE_HOST,
         user=SLAVE_DATABASE_USER,
@@ -25,16 +24,16 @@ def communicate(port,masterIP):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.connect("tcp://%s:%s" % (masterIP,port))
-    getLogger().info("Database Slave start connection stablished IP:Port {}:{}".format(masterIP,port))
+    print("Database Slave start connection stablished IP:Port {}:{}".format(masterIP,port))
     while True:
         message = socket.recv_string()
         try:
-            getLogger().info("Database Slave received new user from master with querey {}".format(message))
+            print("Database Slave received new user from master with querey {}".format(message))
             dbcursour.execute(message)
             print(message)
             socket.send_string("True")
         except:
-            getLogger().error("Database Slave received new user from master with querey {} but can't been added to databse")
+            print("ERROR: Database Slave received new user from master with querey {} but can't been added to databse")
             socket.send_string("False")
 
 if __name__ == '__main__':

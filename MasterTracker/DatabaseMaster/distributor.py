@@ -11,12 +11,11 @@ sys.path.append(os.path.dirname(os.path.dirname(
 
 from HandleSlaves import SendSlave
 from Constants import portsDatanodeClient
-from Util import getLogger
 
 
 
 def distributorF(qSQLs,ports):
-    getLogger().info("Distributer up")
+    print("Distributer up")
     slavesProcesses = mp.Pool(len(ports))
     manager = mp.Manager()
     qs = [manager.Queue() for _ in range(len(ports))]
@@ -25,7 +24,7 @@ def distributorF(qSQLs,ports):
     while True:
         message = qSQLs.get()
         for q in qs: q.put(message)
-        getLogger().info("message :{} distributed".format(message))
+        print("message :{} distributed".format(message))
 
         
 
