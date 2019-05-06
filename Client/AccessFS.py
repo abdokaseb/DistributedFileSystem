@@ -85,6 +85,8 @@ def userInput(socket):
             LSAction("LS",socket,UserID)
             if(functionCheck=="-1"):
                 print(ErrorMessage)
+            else:
+                print('')
     
         elif(Function =="3"):
             logging.info("download action need")
@@ -97,6 +99,8 @@ def userInput(socket):
             logging.info("response after download {}".format(functionCheck))
             if(functionCheck=="-1"):
                 print(ErrorMessage)
+            else:
+                print("Downloaded Successfully\n")
             # print("Please Press 1 to Use another function or 2 to End")
             # check=input()
             
@@ -111,7 +115,7 @@ def userInput(socket):
             if(functionCheck==-1):
                 print(ErrorMessage)
             else:
-                print("Uploaded Successfully")
+                print("Uploaded Successfully\n")
         else: 
             logging.info("wrong input")
             print("Thank you for using our drive")
